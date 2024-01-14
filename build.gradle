@@ -1,0 +1,129 @@
+plugins {
+    id 'java'
+    id 'war'
+    id "io.freefair.lombok" version "8.3"
+}
+
+group 'by.clevertec'
+version '1.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaLanguageVersion.of(17)
+    targetCompatibility = JavaLanguageVersion.of(17)
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    postgresqlVersion = '42.6.0'
+    snakeyamlVersion = '2.1'
+    mockitoVersion = '5.6.0'
+    mapstructVersion = '1.5.5.Final'
+    assertjVersion = '3.24.2'
+    log4jVersion = '2.20.0'
+    jacksonVersion = '2.16.0'
+    flywaydbVersion = '10.3.0'
+    flywayPostgresqlVersion = '10.5.0'
+    servletVersion = '6.0.0'
+    springframeworkVersion = '6.1.2'
+    hibernateVersion = '6.1.7.Final'
+    entityManagerVersion = '5.6.15.Final'
+    persistenceVersion = '3.1.0'
+    annotationVersion = '2.1.1'
+    validationVersion = '3.0.2'
+    validatorVersion = '8.0.1.Final'
+    jupiterVersion = '5.10.1'
+}
+
+
+compileJava {
+    options.compilerArgs << '-parameters'
+    options.compilerArgs += [
+            '-Amapstruct.suppressGeneratorTimestamp=true',
+            '-Amapstruct.suppressGeneratorVersionInfoComment=true',
+            '-Amapstruct.verbose=true'
+    ]
+}
+
+dependencies {
+    implementation "org.springframework:spring-webmvc:${springframeworkVersion}"
+    implementation "org.springframework:spring-orm:${springframeworkVersion}"
+    implementation "org.postgresql:postgresql:${postgresqlVersion}"
+    implementation "org.yaml:snakeyaml:${snakeyamlVersion}"
+    implementation "org.apache.logging.log4j:log4j-core:${log4jVersion}"
+    implementation "org.flywaydb:flyway-core:${flywaydbVersion}"
+    implementation "org.hibernate:hibernate-core:${hibernateVersion}"
+    implementation "org.hibernate:hibernate-entitymanager:${entityManagerVersion}"
+    implementation "jakarta.persistence:jakarta.persistence-api:${persistenceVersion}"
+    implementation "jakarta.annotation:jakarta.annotation-api:${annotationVersion}"
+    implementation "jakarta.validation:jakarta.validation-api:${validationVersion}"
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
+    implementation "org.hibernate.validator:hibernate-validator:${validatorVersion}"
+
+    runtimeOnly "org.flywaydb:flyway-database-postgresql:${flywayPostgresqlVersion}"
+
+    providedCompile "org.mapstruct:mapstruct:${mapstructVersion}"
+    providedCompile "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    providedCompile "jakarta.servlet:jakarta.servlet-api:${servletVersion}"
+
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+    testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${jupiterVersion}"
+    testImplementation "org.assertj:assertj-core:${assertjVersion}"
+
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+jar {
+    enabled = false
+}
+
+war {
+    archiveFileName = "house.war"
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    from(sourceSets.main.output)
+    manifest {
+        attributes 'Implementation-Title': 'house'
+    }
+}
+
+sourceSets {
+    prod {
+        java {
+            srcDirs = ['src/main/java', 'src/prod/java']
+        }
+    }
+    dev {
+        java {
+            srcDirs = ['src/main/java', 'src/dev/java']
+        }
+    }
+}
+
+tasks.register('devWar', War) {
+    archiveFileName = "houseDev.war"
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    from (sourceSets.dev.output)
+    manifest {
+        attributes 'Implementation-Title': 'houseDev'
+    }
+}
+
+tasks.register('prodWar', War) {
+    archiveFileName = "house.war"
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    from (sourceSets.prod.output)
+    manifest {
+        attributes 'Implementation-Title': 'house'
+    }
+}
+
+test {
+    useJUnitPlatform()
+}

@@ -1,0 +1,684 @@
+{
+	"info": {
+		"_postman_id": "a99b52a2-eb11-4e8e-859c-208bfe6e4a40",
+		"name": "Clevertec Hibernate",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25542323"
+	},
+	"item": [
+		{
+			"name": "Person",
+			"item": [
+				{
+					"name": "getAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/persons",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"persons"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllPage2",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/persons?pageNumber=2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"persons"
+							],
+							"query": [
+								{
+									"key": "pageNumber",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getByName",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/persons/name/ivan",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"persons",
+								"name",
+								"ivan"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getByName-404",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/persons/name/nobody",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"persons",
+								"name",
+								"nobody"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getByUuid",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/persons/1064ef21-47d3-47fe-94bf-c239e8c27404",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"persons",
+								"1064ef21-47d3-47fe-94bf-c239e8c27404"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getByUuid-404",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/persons/1064ef21-4753-47fe-94bf-c239e8c27404",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"persons",
+								"1064ef21-4753-47fe-94bf-c239e8c27404"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "save",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"greg\",\r\n    \"surname\": \"stone\",\r\n    \"gender\": \"MALE\",\r\n    \"passport\": {\r\n        \"passportSeries\": \"bn\",\r\n        \"passportNumber\": \"1f5641g58\"\r\n    },\r\n    \"houseUuid\": \"29bf89c0-496a-4d0e-8c35-b4f0e1982be3\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/persons",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"persons"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "save-400",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"passport\": {\r\n        \"passportSeries\": \"bn\",\r\n        \"passportNumber\": \"1k55525\"\r\n    },\r\n    \"houseUuid\": \"29bf89c0-496a-4d0e-8c35-b4f0e1982be3\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/persons",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"persons"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "   {\r\n        \"name\": \"sasha\",\r\n        \"surname\": \"newman\",\r\n        \"gender\": \"MALE\",\r\n        \"passport\": {\r\n            \"passportSeries\": \"ht\",\r\n            \"passportNumber\": \"34564t25z\"\r\n        },\r\n        \"createDateIso\": \"2024-01-14T00:49:45.500168\",\r\n        \"updateDateIso\": \"2024-01-14T00:49:45.500168\",\r\n        \"houseUuid\": \"95221acb-b769-4a60-b21f-cd90e5bb7c97\"\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/persons/1064ef21-47d3-47fe-94bf-c239e8c27404",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"persons",
+								"1064ef21-47d3-47fe-94bf-c239e8c27404"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-400-valid",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "   {\r\n        \"name\": \"sasha\",\r\n        \"surname\": \"newman\",\r\n        \"passport\": {\r\n            \"passportSeries\": \"ht\",\r\n            \"passportNumber\": \"34554t25z\"\r\n        },\r\n        \"createDateIso\": \"2024-01-14T00:49:45.500168\",\r\n        \"updateDateIso\": \"2024-01-14T00:49:45.500168\",\r\n        \"houseUuid\": \"95221acb-b769-4a60-b21f-cd90e5bb7c97\"\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/persons/1064ef21-47d3-47fe-94bf-c239e8c27404",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"persons",
+								"1064ef21-47d3-47fe-94bf-c239e8c27404"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-400-uuid",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "   {\r\n        \"name\": \"sasha\",\r\n        \"surname\": \"newman\",\r\n        \"gender\": \"MALE\",\r\n        \"passport\": {\r\n            \"passportSeries\": \"ht\",\r\n            \"passportNumber\": \"34554t25z\"\r\n        },\r\n        \"createDateIso\": \"2024-01-14T00:49:45.500168\",\r\n        \"updateDateIso\": \"2024-01-14T00:49:45.500168\",\r\n        \"houseUuid\": \"95221acb-b769-4a60-b21f-cd90e5bb7c97\"\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/persons/1064ef21-47d3-47fe-94bf-c239e8c2740j",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"persons",
+								"1064ef21-47d3-47fe-94bf-c239e8c2740j"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "   {\r\n        \"name\": \"sasha\",\r\n        \"surname\": \"newwoman\",\r\n        \"passport\": {\r\n            \"passportSeries\": \"ht\",\r\n            \"passportNumber\": \"34554t23z\"\r\n        }\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/persons/1064ef21-47d3-47fe-94bf-c239e8c27404",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"persons",
+								"1064ef21-47d3-47fe-94bf-c239e8c27404"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-404",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "   {\r\n        \"name\": \"sasha\",\r\n        \"surname\": \"newwoman\",\r\n        \"passport\": {\r\n            \"passportSeries\": \"ht\",\r\n            \"passportNumber\": \"34554t23z\"\r\n        }\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/persons/1064ef21-47d3-47fe-94bf-c239e8c27454",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"persons",
+								"1064ef21-47d3-47fe-94bf-c239e8c27454"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/persons/a32c8c3c-69ac-425e-9e81-1fb85a406fec",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"persons",
+								"a32c8c3c-69ac-425e-9e81-1fb85a406fec"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ownedHouses",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/persons/houses/owned/47c29808-fb03-4bf1-b5ae-1b8bd9704994",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"persons",
+								"houses",
+								"owned",
+								"47c29808-fb03-4bf1-b5ae-1b8bd9704994"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ownedHouses-404",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/persons/houses/owned/47c29808-fb03-4bf1-b5ae-1b8b49704994",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"persons",
+								"houses",
+								"owned",
+								"47c29808-fb03-4bf1-b5ae-1b8b49704994"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "House",
+			"item": [
+				{
+					"name": "getAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/houses",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"houses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllPage2",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/houses?pageNumber=2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"houses"
+							],
+							"query": [
+								{
+									"key": "pageNumber",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getByUuid",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/houses/29bf89c0-496a-4d0e-8c35-b4f0e1982be3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"houses",
+								"29bf89c0-496a-4d0e-8c35-b4f0e1982be3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getByUuid-404",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/houses/1064ef21-4753-47fe-94bf-c239e8c27404",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"houses",
+								"1064ef21-4753-47fe-94bf-c239e8c27404"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "save",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "  {\r\n        \"area\": \"minsk region\",\r\n        \"country\": \"belarus\",\r\n        \"city\": \"minsk\",\r\n        \"street\": \"test\",\r\n        \"number\": \"3\"\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/houses",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"houses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "  {\r\n        \"area\": \"minsk region\",\r\n        \"country\": \"belarus\",\r\n        \"city\": \"minsk\",\r\n        \"street\": \"new street\",\r\n        \"number\": \"6\"\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/houses/95221acb-b769-4a60-b21f-cd90e5bb7c97",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"houses",
+								"95221acb-b769-4a60-b21f-cd90e5bb7c97"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-400-uuid",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"area\": \"minsk region\",\r\n    \"country\": \"belarus\",\r\n    \"city\": \"minsk\",\r\n    \"street\": \"new street\",\r\n    \"number\": \"6\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/houses/1064ef21-47d3-47fe-94bf-c239e8c2740j",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"houses",
+								"1064ef21-47d3-47fe-94bf-c239e8c2740j"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/houses/c6e54583-8513-49f3-b247-0d75a81f10b6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"houses",
+								"c6e54583-8513-49f3-b247-0d75a81f10b6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-406",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/houses/319d9463-6aa3-423e-a0a9-80592f0950e8",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"houses",
+								"319d9463-6aa3-423e-a0a9-80592f0950e8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "hoseResident",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/houses/95221acb-b769-4a60-b21f-cd90e5bb7c97/residents",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"houses",
+								"95221acb-b769-4a60-b21f-cd90e5bb7c97",
+								"residents"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "hoseResident-404",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/houses/95221acb-b769-4a60-b21f-cd90e5b47c97/residents",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"houses",
+								"95221acb-b769-4a60-b21f-cd90e5b47c97",
+								"residents"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "hoseResident-410",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/houses/f50b8bb0-8837-445b-be6b-f395a748bac2/residents",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"houses",
+								"f50b8bb0-8837-445b-be6b-f395a748bac2",
+								"residents"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
