@@ -20,8 +20,8 @@ import org.mapstruct.Mapping;
  *
  * <p>Аннотация применяется к методам.
  */
-@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
 @Mapping(target = "created", expression = "java(convertToIsoDate(entity.getCreateDate()))")
 public @interface CreateDateMapping {
 }

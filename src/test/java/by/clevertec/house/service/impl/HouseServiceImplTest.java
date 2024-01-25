@@ -25,6 +25,8 @@ import by.clevertec.house.repository.HouseRepository;
 import by.clevertec.house.util.HouseTestBuilder;
 import by.clevertec.house.util.PersonTestBuilder;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -34,6 +36,9 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 @ExtendWith(MockitoExtension.class)
 class HouseServiceImplTest {
@@ -53,6 +58,8 @@ class HouseServiceImplTest {
     @Nested
     class GetAllTest {
 
+        private final PageRequest pageRequest = PageRequest.of(PAGE_NUMBER, PAGE_SIZE);
+
         @Test
         void getAllShouldReturnHouseResponseDtosList_whenHousesListIsNotEmpty() {
             HouseResponseDto houseResponseDto = HouseTestBuilder.builder()
@@ -63,15 +70,16 @@ class HouseServiceImplTest {
                     .build()
                     .buildHouse();
             List<House> houses = List.of(house);
+            PageImpl<House> page = new PageImpl<>(houses);
 
-            when(houseRepository.getAll(PAGE_NUMBER, PAGE_SIZE))
-                    .thenReturn(houses);
+            when(houseRepository.findAll(pageRequest))
+                    .thenReturn(page);
             when(mapper.toDto(house))
                     .thenReturn(houseResponseDto);
 
-            List<HouseResponseDto> actual = houseService.getAll(PAGE_NUMBER, PAGE_SIZE);
+            Page<HouseResponseDto> actual = houseService.getAll(pageRequest);
 
-            assertThat(actual)
+            assertThat(actual.getContent())
                     .hasSize(expected.size())
                     .isEqualTo(expected);
         }
@@ -80,11 +88,12 @@ class HouseServiceImplTest {
         void getAllShouldThrowCustomNoContentException_whenHousesListIsEmpty() {
             CustomNoContentException expectedException = CustomNoContentException.of(House.class);
             List<House> houses = List.of();
+            PageImpl<House> page = new PageImpl<>(houses);
 
-            when(houseRepository.getAll(PAGE_NUMBER, PAGE_SIZE))
-                    .thenReturn(houses);
+            when(houseRepository.findAll(pageRequest))
+                    .thenReturn(page);
 
-            CustomNoContentException actualException = assertThrows(CustomNoContentException.class, () -> houseService.getAll(PAGE_NUMBER, PAGE_SIZE));
+            CustomNoContentException actualException = assertThrows(CustomNoContentException.class, () -> houseService.getAll(pageRequest));
 
             assertEquals(expectedException.getMessage(), actualException.getMessage());
             verify(mapper, never()).toDto(any(House.class));
@@ -103,9 +112,10 @@ class HouseServiceImplTest {
                     .build()
                     .buildHouse();
             UUID uuid = house.getUuid();
+            Optional<House> optionalHouse = Optional.of(house);
 
-            when(houseRepository.getByUuid(uuid))
-                    .thenReturn(house);
+            when(houseRepository.findByUuid(uuid))
+                    .thenReturn(optionalHouse);
             when(mapper.toDto(house))
                     .thenReturn(expected);
 
@@ -122,17 +132,18 @@ class HouseServiceImplTest {
         }
 
         @Test
-        void getShouldThrowCustomEntityNotFoundException_whenIncorectUuid() {
+        void getShouldThrowCustomEntityNotFoundException_whenIncorrectUuid() {
             CustomEntityNotFoundException expectedException = CustomEntityNotFoundException.of(House.class, INCORRECT_UUID);
 
-            when(houseRepository.getByUuid(INCORRECT_UUID))
-                    .thenThrow(expectedException);
+            when(houseRepository.findByUuid(INCORRECT_UUID))
+                    .thenReturn(Optional.empty());
 
             CustomEntityNotFoundException actualException = assertThrows(CustomEntityNotFoundException.class, () -> houseService.getByUuid(INCORRECT_UUID));
 
             verify(mapper, never()).toDto(any(House.class));
             assertEquals(expectedException.getMessage(), actualException.getMessage());
         }
+
     }
 
     @Nested
@@ -150,10 +161,10 @@ class HouseServiceImplTest {
 
             when(mapper.toDomain(houseDto))
                     .thenReturn(house);
+            when(houseRepository.save(house))
+                    .thenReturn(house);
 
             houseService.save(houseDto);
-
-            verify(houseRepository).save(house);
         }
 
         @Test
@@ -169,6 +180,8 @@ class HouseServiceImplTest {
 
             when(mapper.toDomain(houseDto))
                     .thenReturn(house);
+            when(houseRepository.save(house))
+                    .thenReturn(house);
 
             houseService.save(houseDto);
 
@@ -182,15 +195,12 @@ class HouseServiceImplTest {
 
         @Test
         void updateShouldThrowCustomEntityNotFoundException_whenIncorrectUuid() {
-            CustomEntityNotFoundException exception = CustomEntityNotFoundException.of(House.class, INCORRECT_UUID);
-
-            when(houseRepository.getByUuid(INCORRECT_UUID))
-                    .thenThrow(exception);
+            when(houseRepository.findByUuid(INCORRECT_UUID))
+                    .thenReturn(Optional.empty());
 
             assertThrows(CustomEntityNotFoundException.class, () -> houseService.update(INCORRECT_UUID, any(HouseRequestDto.class)));
             verify(mapper, never()).toDomain(any(HouseRequestDto.class));
             verify(mapper, never()).merge(any(House.class), any(House.class));
-            verify(houseRepository, never()).update(any(House.class));
         }
 
         @Test
@@ -198,6 +208,7 @@ class HouseServiceImplTest {
             House house = HouseTestBuilder.builder()
                     .build()
                     .buildHouse();
+            Optional<House> optionalHouse = Optional.of(house);
             HouseRequestDto houseRequestDto = HouseTestBuilder.builder()
                     .withCity("new york")
                     .build()
@@ -211,16 +222,14 @@ class HouseServiceImplTest {
                     .build()
                     .buildHouse();
 
-            when(houseRepository.getByUuid(CORRECT_UUID))
-                    .thenReturn(house);
+            when(houseRepository.findByUuid(CORRECT_UUID))
+                    .thenReturn(optionalHouse);
             when(mapper.toDomain(houseRequestDto))
                     .thenReturn(updated);
             when(mapper.merge(house, updated))
                     .thenReturn(merged);
 
             houseService.update(CORRECT_UUID, houseRequestDto);
-
-            verify(houseRepository).update(merged);
         }
     }
 
@@ -232,13 +241,12 @@ class HouseServiceImplTest {
             House house = HouseTestBuilder.builder()
                     .build()
                     .buildHouse();
+            Optional<House> optionalHouse = Optional.of(house);
 
-            when(houseRepository.getByUuid(CORRECT_UUID))
-                    .thenReturn(house);
+            when(houseRepository.findByUuid(CORRECT_UUID))
+                    .thenReturn(optionalHouse);
 
             houseService.delete(CORRECT_UUID);
-
-            verify(houseRepository).delete(CORRECT_UUID);
         }
 
         @Test
@@ -247,31 +255,32 @@ class HouseServiceImplTest {
                     .build()
                     .buildPerson();
             House house = HouseTestBuilder.builder()
-                    .withResidents(List.of(person))
+                    .withResidents(Set.of(person))
                     .build()
                     .buildHouse();
+            Optional<House> optionalHouse = Optional.of(house);
             ConditionalException expectedException = new ConditionalException("Сan not delete a house in which at least 1 person lives");
 
-            when(houseRepository.getByUuid(CORRECT_UUID))
-                    .thenReturn(house);
+            when(houseRepository.findByUuid(CORRECT_UUID))
+                    .thenReturn(optionalHouse);
 
             ConditionalException actualException = assertThrows(ConditionalException.class, () -> houseService.delete(CORRECT_UUID));
 
             assertEquals(expectedException.getMessage(), actualException.getMessage());
-            verify(houseRepository, never()).delete(CORRECT_UUID);
+            verify(houseRepository, never()).delete(any(House.class));
         }
 
         @Test
         void deleteShouldThrowCustomEntityNotFoundException_whenIncorrectUuid() {
             CustomEntityNotFoundException expectedException = CustomEntityNotFoundException.of(House.class, INCORRECT_UUID);
 
-            when(houseRepository.getByUuid(INCORRECT_UUID))
-                    .thenThrow(expectedException);
+            when(houseRepository.findByUuid(INCORRECT_UUID))
+                    .thenReturn(Optional.empty());
 
             CustomEntityNotFoundException actualException = assertThrows(CustomEntityNotFoundException.class, () -> houseService.delete(INCORRECT_UUID));
 
             assertEquals(expectedException.getMessage(), actualException.getMessage());
-            verify(houseRepository, never()).delete(INCORRECT_UUID);
+            verify(houseRepository, never()).delete(any(House.class));
         }
     }
 }

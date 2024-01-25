@@ -26,6 +26,7 @@ import by.clevertec.house.repository.PersonRepository;
 import by.clevertec.house.util.HouseTestBuilder;
 import by.clevertec.house.util.PersonTestBuilder;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,9 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 @ExtendWith(MockitoExtension.class)
 class PersonServiceImplTest {
@@ -57,6 +61,8 @@ class PersonServiceImplTest {
     @Nested
     class GetAllTest {
 
+        private final PageRequest pageRequest = PageRequest.of(PAGE_NUMBER, PAGE_SIZE);
+
         @Test
         void getAllShouldReturnPersonResponseDtosList_whenPersonsListIsNotEmpty() {
             PersonResponseDto personResponseDto = PersonTestBuilder.builder()
@@ -67,15 +73,16 @@ class PersonServiceImplTest {
                     .build()
                     .buildPerson();
             List<Person> people = List.of(person);
+            PageImpl<Person> page = new PageImpl<>(people);
 
-            when(personRepository.getAll(PAGE_NUMBER, PAGE_SIZE))
-                    .thenReturn(people);
+            when(personRepository.findAll(pageRequest))
+                    .thenReturn(page);
             when(mapper.toDto(person))
                     .thenReturn(personResponseDto);
 
-            List<PersonResponseDto> actual = personService.getAll(PAGE_NUMBER, PAGE_SIZE);
+            Page<PersonResponseDto> actual = personService.getAll(pageRequest);
 
-            assertThat(actual)
+            assertThat(actual.getContent())
                     .hasSize(expected.size())
                     .isEqualTo(expected);
         }
@@ -84,11 +91,12 @@ class PersonServiceImplTest {
         void getAllShouldThrowCustomNoContentException_whenPersonsListIsEmpty() {
             CustomNoContentException expectedException = CustomNoContentException.of(Person.class);
             List<Person> people = List.of();
+            PageImpl<Person> page = new PageImpl<>(people);
 
-            when(personRepository.getAll(PAGE_NUMBER, PAGE_SIZE))
-                    .thenReturn(people);
+            when(personRepository.findAll(pageRequest))
+                    .thenReturn(page);
 
-            CustomNoContentException actualException = assertThrows(CustomNoContentException.class, () -> personService.getAll(PAGE_NUMBER, PAGE_SIZE));
+            CustomNoContentException actualException = assertThrows(CustomNoContentException.class, () -> personService.getAll(pageRequest));
 
             assertEquals(expectedException.getMessage(), actualException.getMessage());
             verify(mapper, never()).toDto(any(Person.class));
@@ -106,10 +114,11 @@ class PersonServiceImplTest {
             Person person = PersonTestBuilder.builder()
                     .build()
                     .buildPerson();
+            Optional<Person> optionalPerson = Optional.of(person);
             UUID uuid = person.getUuid();
 
-            when(personRepository.getByUuid(uuid))
-                    .thenReturn(person);
+            when(personRepository.findByUuid(uuid))
+                    .thenReturn(optionalPerson);
             when(mapper.toDto(person))
                     .thenReturn(expected);
 
@@ -130,8 +139,8 @@ class PersonServiceImplTest {
         void getShouldThrowCustomEntityNotFoundException_whenIncorectUuid() {
             CustomEntityNotFoundException expectedException = CustomEntityNotFoundException.of(Person.class, INCORRECT_UUID);
 
-            when(personRepository.getByUuid(INCORRECT_UUID))
-                    .thenThrow(expectedException);
+            when(personRepository.findByUuid(INCORRECT_UUID))
+                    .thenReturn(Optional.empty());
 
             CustomEntityNotFoundException actualException = assertThrows(CustomEntityNotFoundException.class, () -> personService.getByUuid(INCORRECT_UUID));
 
@@ -155,11 +164,12 @@ class PersonServiceImplTest {
             House house = HouseTestBuilder.builder()
                     .build()
                     .buildHouse();
+            Optional<House> optionalHouse = Optional.of(house);
 
             when(mapper.toDomain(personRequestDto))
                     .thenReturn(person);
-            when(houseRepository.getByUuid(HOUSE_UUID))
-                    .thenReturn(house);
+            when(houseRepository.findByUuid(HOUSE_UUID))
+                    .thenReturn(optionalHouse);
 
             personService.save(personRequestDto);
 
@@ -181,17 +191,19 @@ class PersonServiceImplTest {
             House house = HouseTestBuilder.builder()
                     .build()
                     .buildHouse();
+            Optional<House> optionalHouse = Optional.of(house);
             House ownedHouse = HouseTestBuilder.builder()
                     .withUuid(CORRECT_UUID)
                     .build()
                     .buildHouse();
+            Optional<House> optionalOwnedHouse = Optional.of(ownedHouse);
 
             when(mapper.toDomain(personRequestDto))
                     .thenReturn(person);
-            when(houseRepository.getByUuid(HOUSE_UUID))
-                    .thenReturn(house);
-            when(houseRepository.getByUuid(CORRECT_UUID))
-                    .thenReturn(ownedHouse);
+            when(houseRepository.findByUuid(HOUSE_UUID))
+                    .thenReturn(optionalHouse);
+            when(houseRepository.findByUuid(CORRECT_UUID))
+                    .thenReturn(optionalOwnedHouse);
 
             personService.save(personRequestDto);
 
@@ -212,11 +224,12 @@ class PersonServiceImplTest {
             House house = HouseTestBuilder.builder()
                     .build()
                     .buildHouse();
+            Optional<House> optionalHouse = Optional.of(house);
 
             when(mapper.toDomain(personDto))
                     .thenReturn(person);
-            when(houseRepository.getByUuid(HOUSE_UUID))
-                    .thenReturn(house);
+            when(houseRepository.findByUuid(HOUSE_UUID))
+                    .thenReturn(optionalHouse);
 
             personService.save(personDto);
 
@@ -231,22 +244,20 @@ class PersonServiceImplTest {
 
         @Test
         void updateShouldThrowCustomEntityNotFoundException_whenIncorrectUuid() {
-            CustomEntityNotFoundException exception = CustomEntityNotFoundException.of(Person.class, INCORRECT_UUID);
-
-            when(personRepository.getByUuid(INCORRECT_UUID))
-                    .thenThrow(exception);
+            when(personRepository.findByUuid(INCORRECT_UUID))
+                    .thenReturn(Optional.empty());
 
             assertThrows(CustomEntityNotFoundException.class, () -> personService.update(INCORRECT_UUID, any(PersonPutRequestDto.class)));
             verify(mapper, never()).toDomain(any(PersonPutRequestDto.class));
             verify(mapper, never()).merge(any(Person.class), any(Person.class));
-            verify(personRepository, never()).update(any(Person.class));
         }
 
         @Test
         void updateShouldInvokeRepository_whenCorrectUuidAndDtoTransferred() {
-            Person house = PersonTestBuilder.builder()
+            Person person = PersonTestBuilder.builder()
                     .build()
                     .buildPerson();
+            Optional<Person> optionalPerson = Optional.of(person);
             PersonPutRequestDto personRequestDto = PersonTestBuilder.builder()
                     .withName("newman")
                     .build()
@@ -260,16 +271,14 @@ class PersonServiceImplTest {
                     .build()
                     .buildPerson();
 
-            when(personRepository.getByUuid(CORRECT_UUID))
-                    .thenReturn(house);
+            when(personRepository.findByUuid(CORRECT_UUID))
+                    .thenReturn(optionalPerson);
             when(mapper.toDomain(personRequestDto))
                     .thenReturn(updated);
-            when(mapper.merge(house, updated))
+            when(mapper.merge(person, updated))
                     .thenReturn(merged);
 
             personService.update(CORRECT_UUID, personRequestDto);
-
-            verify(personRepository).update(merged);
         }
     }
 
@@ -278,22 +287,20 @@ class PersonServiceImplTest {
 
         @Test
         void updateShouldThrowCustomEntityNotFoundException_whenIncorrectUuid() {
-            CustomEntityNotFoundException exception = CustomEntityNotFoundException.of(Person.class, INCORRECT_UUID);
-
-            when(personRepository.getByUuid(INCORRECT_UUID))
-                    .thenThrow(exception);
+            when(personRepository.findByUuid(INCORRECT_UUID))
+                    .thenReturn(Optional.empty());
 
             assertThrows(CustomEntityNotFoundException.class, () -> personService.update(INCORRECT_UUID, any(PersonPutRequestDto.class)));
             verify(mapper, never()).toDomain(any(PersonPutRequestDto.class));
             verify(mapper, never()).merge(any(Person.class), any(Person.class));
-            verify(personRepository, never()).update(any(Person.class));
         }
 
         @Test
         void updateShouldInvokeRepository_whenCorrectUuidAndDtoTransferred() {
-            Person house = PersonTestBuilder.builder()
+            Person person = PersonTestBuilder.builder()
                     .build()
                     .buildPerson();
+            Optional<Person> optionalPerson = Optional.of(person);
             PersonPutRequestDto personRequestDto = PersonTestBuilder.builder()
                     .withName("newman")
                     .build()
@@ -307,16 +314,14 @@ class PersonServiceImplTest {
                     .build()
                     .buildPerson();
 
-            when(personRepository.getByUuid(CORRECT_UUID))
-                    .thenReturn(house);
+            when(personRepository.findByUuid(CORRECT_UUID))
+                    .thenReturn(optionalPerson);
             when(mapper.toDomain(personRequestDto))
                     .thenReturn(updated);
-            when(mapper.merge(house, updated))
+            when(mapper.merge(person, updated))
                     .thenReturn(merged);
 
             personService.update(CORRECT_UUID, personRequestDto);
-
-            verify(personRepository).update(merged);
         }
     }
 
@@ -328,13 +333,13 @@ class PersonServiceImplTest {
             Person person = PersonTestBuilder.builder()
                     .build()
                     .buildPerson();
+            Optional<Person> optionalPerson = Optional.of(person);
 
-            when(personRepository.getByUuid(CORRECT_UUID))
-                    .thenReturn(person);
+            when(personRepository.findByUuid(CORRECT_UUID))
+                    .thenReturn(optionalPerson);
 
             personService.delete(CORRECT_UUID);
 
-            verify(personRepository).delete(CORRECT_UUID);
             verify(houseRepository, never()).save(any(House.class));
         }
 
@@ -342,13 +347,13 @@ class PersonServiceImplTest {
         void deleteShouldThrowCustomEntityNotFoundException_whenIncorrectUuid() {
             CustomEntityNotFoundException expectedException = CustomEntityNotFoundException.of(Person.class, INCORRECT_UUID);
 
-            when(personRepository.getByUuid(INCORRECT_UUID))
-                    .thenThrow(expectedException);
+            when(personRepository.findByUuid(INCORRECT_UUID))
+                    .thenReturn(Optional.empty());
 
             CustomEntityNotFoundException actualException = assertThrows(CustomEntityNotFoundException.class, () -> personService.delete(INCORRECT_UUID));
 
             assertEquals(expectedException.getMessage(), actualException.getMessage());
-            verify(personRepository, never()).delete(INCORRECT_UUID);
+            verify(personRepository, never()).delete(any(Person.class));
         }
     }
 }

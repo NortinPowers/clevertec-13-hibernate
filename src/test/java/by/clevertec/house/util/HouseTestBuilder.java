@@ -57,7 +57,7 @@ public class HouseTestBuilder {
     private List<UUID> ownerUuids = new ArrayList<>();
 
     @Builder.Default
-    private List<Person> residents = new ArrayList<>();
+    private Set<Person> residents = new HashSet<>();
 
     @Builder.Default
     private Set<Person> owners = new HashSet<>();

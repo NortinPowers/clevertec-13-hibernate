@@ -6,17 +6,18 @@ import by.clevertec.house.dto.response.HouseResponseDto;
 import by.clevertec.house.dto.response.PersonResponseDto;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface HouseService {
 
     /**
      * Получает список объектов {@link HouseResponseDto} с учетом параметров страницы и размера страницы.
      *
-     * @param pageNumber Номер страницы (начиная с 0).
-     * @param pageSize   Размер страницы, количество элементов на странице.
-     * @return Список объектов {@link HouseResponseDto} для текущей страницы и размера страницы.
+     * @param pageable Объект Pageable.
+     * @return Список объектов {@link HouseResponseDto} для текущей страницы и размера страницы обернутых в Page.
      */
-    List<HouseResponseDto> getAll(int pageNumber, int pageSize);
+    Page<HouseResponseDto> getAll(Pageable pageable);
 
     /**
      * Получает объект {@link HouseResponseDto} по уникальному идентификатору (UUID).
@@ -31,7 +32,9 @@ public interface HouseService {
      *
      * @param houseDto Объект {@link HouseRequestDto}, который требуется сохранить в виде нового дома.
      */
-    void save(HouseRequestDto houseDto);
+    UUID save(HouseRequestDto houseDto);
+
+    void save(House house);
 
     /**
      * Обновляет данные объекта {@link House} по уникальному идентификатору (UUID).
@@ -55,4 +58,10 @@ public interface HouseService {
      * @return Список объектов {@link PersonResponseDto}, представляющих жителей указанного дома.
      */
     List<PersonResponseDto> getResidents(UUID uuid);
+
+    void addOwner(UUID uuid, UUID personUuid);
+
+    void deleteOwner(UUID uuid, UUID personUuid);
+
+    Page<HouseResponseDto> getHouseSearchResult(String condition, Pageable pageable);
 }

@@ -13,7 +13,6 @@ import by.clevertec.house.exception.CustomEntityNotFoundException;
 import by.clevertec.house.mapper.HouseMapper;
 import by.clevertec.house.mapper.PersonMapper;
 import by.clevertec.house.repository.HouseRepository;
-import by.clevertec.house.repository.JdbcPersonRepository;
 import by.clevertec.house.repository.PersonRepository;
 import by.clevertec.house.service.PersonService;
 import java.time.LocalDateTime;
@@ -22,32 +21,36 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PersonServiceImpl implements PersonService {
 
     private final PersonRepository personRepository;
-    private final JdbcPersonRepository jdbcPersonRepository;
     private final HouseRepository houseRepository;
     private final PersonMapper personMapper;
     private final HouseMapper houseMapper;
 
     @Override
-    public List<PersonResponseDto> getAll(int pageNumber, int pageSize) {
-        List<Person> people = personRepository.getAll(pageNumber, pageSize);
-        checkList(people, Person.class);
-        return people.stream()
-                .map(personMapper::toDto)
-                .toList();
+    public Page<PersonResponseDto> getAll(Pageable pageable) {
+        Page<PersonResponseDto> people = personRepository.findAll(pageable)
+                .map(personMapper::toDto);
+        checkList(people.getContent(), Person.class);
+        return people;
     }
 
     @Override
+    @Cacheable("persons")
     public PersonResponseDto getByUuid(UUID uuid) {
-        return personMapper.toDto(personRepository.getByUuid(uuid));
+        return personRepository.findByUuid(uuid)
+                .map(personMapper::toDto)
+                .orElseThrow(() -> CustomEntityNotFoundException.of(Person.class, uuid));
     }
 
     @Override
@@ -69,66 +72,101 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public void update(UUID uuid, PersonPutRequestDto personDto) {
-        Person person = personRepository.getByUuid(uuid);
-        Person updated = personMapper.toDomain(personDto);
-        if (!person.equals(updated)) {
-            Person merged = personMapper.merge(person, updated);
-            merged.setCreateDate(person.getCreateDate());
-            merged.setUpdateDate(LocalDateTime.now());
-            if (updated.getOwnedHouses() == null) {
-                merged.setOwnedHouses(Collections.emptyList());
+        Optional<Person> personOptional = personRepository.findByUuid(uuid);
+        if (personOptional.isPresent()) {
+            Person updated = personMapper.toDomain(personDto);
+            Person person = personOptional.get();
+            if (!person.equals(updated)) {
+                Person merged = personMapper.merge(person, updated);
+                merged.setCreateDate(person.getCreateDate());
+                merged.setUpdateDate(LocalDateTime.now());
+                if (updated.getOwnedHouses() == null) {
+                    merged.setOwnedHouses(Collections.emptyList());
+                }
             }
-            personRepository.update(merged);
+        } else {
+            throw CustomEntityNotFoundException.of(Person.class, uuid);
         }
     }
 
     @Override
     public void updatePath(UUID uuid, PersonPathRequestDto personDto) {
-        Person person = personRepository.getByUuid(uuid);
-        Person updated = personMapper.toDomain(personDto);
-        if (!person.equals(updated)) {
-            Person merged = personMapper.merge(person, updated);
-            merged.setCreateDate(person.getCreateDate());
-            merged.setUpdateDate(LocalDateTime.now());
-            personRepository.update(merged);
+        Optional<Person> personOptional = personRepository.findByUuid(uuid);
+        if (personOptional.isPresent()) {
+            Person updated = personMapper.toDomain(personDto);
+            Person person = personOptional.get();
+            if (!person.equals(updated)) {
+                Person merged = personMapper.merge(person, updated);
+                merged.setCreateDate(person.getCreateDate());
+                merged.setUpdateDate(LocalDateTime.now());
+            }
+        } else {
+            throw CustomEntityNotFoundException.of(Person.class, uuid);
         }
     }
 
     @Override
     public void delete(UUID uuid) {
-        Person person = personRepository.getByUuid(uuid);
-        person.getOwnedHouses().forEach(house -> {
-            house.getOwners().remove(person);
-            houseRepository.save(house);
-        });
-        person.getOwnedHouses().clear();
-        personRepository.delete(uuid);
+        Optional<Person> personOptional = personRepository.findByUuid(uuid);
+        if (personOptional.isPresent()) {
+            Person person = personOptional.get();
+            person.getOwnedHouses().forEach(house -> {
+                house.getOwners().remove(person);
+                houseRepository.save(house);
+            });
+            person.getOwnedHouses().clear();
+            personRepository.deleteByUuid(uuid);
+        } else {
+            throw CustomEntityNotFoundException.of(Person.class, uuid);
+        }
     }
 
     @Override
     public List<HouseResponseDto> getOwnedHouses(UUID uuid) {
         checkIllegalArgument(uuid, "UUID cannot be null");
-        List<House> houses = houseRepository.getOwnedHousesByUuid(uuid);
-        if (houses.isEmpty()) {
-            throw new CustomEntityNotFoundException("No houses owned by the person with UUID " + uuid);
+        Optional<Person> personOptional = personRepository.findByUuid(uuid);
+        if (personOptional.isPresent()) {
+            List<House> houses = personOptional.get().getOwnedHouses();
+            if (houses.isEmpty()) {
+                throw new CustomEntityNotFoundException("No houses owned by the person with UUID " + uuid);
+            }
+            return houses.stream()
+                    .map(houseMapper::toDto)
+                    .toList();
+        } else {
+            throw CustomEntityNotFoundException.of(Person.class, uuid);
         }
-        return houses.stream()
-                .map(houseMapper::toDto)
-                .toList();
     }
 
     @Override
-    public PersonResponseDto getByName(String name) {
-        checkIllegalArgument(name, "Name cannot be null");
-        Optional<Person> person = jdbcPersonRepository.getByName(name);
-        return person.map(personMapper::toDto)
-                .orElseThrow(() -> new CustomEntityNotFoundException("Person with name " + name + " not found"));
+    public void changeHome(UUID uuid, UUID homeUuid) {
+        Optional<Person> optionalPerson = personRepository.findByUuid(uuid);
+        if (optionalPerson.isPresent()) {
+            Optional<House> optionalHouse = houseRepository.findByUuid(homeUuid);
+            if (optionalHouse.isPresent()) {
+                House updated = optionalHouse.get();
+                Person person = optionalPerson.get();
+                if (!person.getHouse().equals(updated)) {
+                    person.setHouse(updated);
+                }
+            }
+        } else {
+            throw CustomEntityNotFoundException.of(Person.class, uuid);
+        }
+    }
+
+    @Override
+    public Page<PersonResponseDto> getPersonSearchResult(String condition, Pageable pageable) {
+        Page<PersonResponseDto> people = personRepository.getPersonSearchResult(condition, pageable)
+                .map(personMapper::toDto);
+        checkList(people.getContent(), Person.class);
+        return people;
     }
 
     private House getResidentHouse(PersonPutRequestDto personDto) {
         UUID uuid = personDto.getHouseUuid();
         checkIllegalArgument(uuid, "Uuid of the person`s house is missing");
-        return houseRepository.getByUuid(uuid);
+        return houseRepository.findByUuid(uuid).orElseThrow(() -> (CustomEntityNotFoundException.of(House.class, uuid)));
     }
 
     private List<House> getHouseOwners(PersonPutRequestDto personDto) {
@@ -138,7 +176,8 @@ public class PersonServiceImpl implements PersonService {
             houses = Collections.emptyList();
         } else {
             houses = ownedHouseUuids.stream()
-                    .map(houseRepository::getByUuid)
+                    .map(houseRepository::findByUuid)
+                    .flatMap(Optional::stream)
                     .distinct()
                     .toList();
         }

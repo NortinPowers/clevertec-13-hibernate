@@ -2,13 +2,9 @@ package by.clevertec.house.mapper;
 
 import by.clevertec.house.domain.Passport;
 import by.clevertec.house.dto.PassportDto;
-import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
-import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(config = CustomMapperConfig.class)
 public interface PassportMapper {
 
     /**
@@ -26,5 +22,4 @@ public interface PassportMapper {
      * @return Объект {@link Passport}, созданный на основе данных из объекта {@link PassportDto}.
      */
     Passport toDomain(PassportDto dto);
-
 }

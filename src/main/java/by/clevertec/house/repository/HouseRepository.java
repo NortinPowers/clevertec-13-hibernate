@@ -2,53 +2,49 @@ package by.clevertec.house.repository;
 
 import by.clevertec.house.domain.House;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-public interface HouseRepository {
-
-    /**
-     * Получает список домов с учетом параметров страницы и размера страницы.
-     *
-     * @param pageNumber Номер страницы (начиная с 0).
-     * @param pageSize   Размер страницы, количество элементов на странице.
-     * @return Список объектов {@link House} для текущей страницы и размера страницы.
-     */
-    List<House> getAll(int pageNumber, int pageSize);
+public interface HouseRepository extends JpaRepository<House, Long> {
 
     /**
      * Получает объект {@link House} по уникальному идентификатору (UUID).
      *
      * @param uuid Уникальный идентификатор (UUID) дома.
-     * @return Объект {@link House}, соответствующий указанному идентификатору.
+     * @return Объект {@link Optional<House>}, соответствующий указанному идентификатору.
      */
-    House getByUuid(UUID uuid);
-
-    /**
-     * Сохраняет объект {@link House}.
-     *
-     * @param house Объект {@link House}, который требуется сохранить.
-     */
-    void save(House house);
-
-    /**
-     * Обновляет данные объекта {@link House}.
-     *
-     * @param house Объект {@link House}, который требуется обновить.
-     */
-    void update(House house);
+    @EntityGraph(attributePaths = {"residents", "owners"})
+    Optional<House> findByUuid(UUID uuid);
 
     /**
      * Удаляет объект {@link House} по уникальному идентификатору (UUID).
      *
      * @param uuid Уникальный идентификатор (UUID) дома, который требуется удалить.
      */
-    void delete(UUID uuid);
+    void deleteByUuid(UUID uuid);
 
-    /**
-     * Получает список домов, принадлежащих пользователю с указанным уникальным идентификатором (UUID).
-     *
-     * @param uuid Уникальный идентификатор (UUID) пользователя.
-     * @return Список объектов {@link House}, принадлежащих указанному пользователю.
-     */
-    List<House> getOwnedHousesByUuid(UUID uuid);
+    @Query("SELECT DISTINCT h FROM House h "
+            + "JOIN FETCH HouseHistory hh ON h = hh.house "
+            + "JOIN FETCH Person p ON hh.person = p "
+            + "WHERE p.uuid = :personUuid AND hh.status = 'TENANT'")
+    List<House> findAllByResidentUuid(UUID personUuid);
+
+    @Query("SELECT DISTINCT h FROM House h "
+            + "JOIN FETCH HouseHistory hh ON h = hh.house "
+            + "JOIN FETCH Person p ON hh.person = p "
+            + "WHERE p.uuid = :personUuid AND hh.status = 'OWNER'")
+    List<House> findAllByOwnersUuid(UUID personUuid);
+
+    @Query("SELECT DISTINCT h FROM House h "
+            + "WHERE (LOWER(h.area) LIKE LOWER(CONCAT('%', :condition, '%')) "
+            + "OR LOWER(h.country) LIKE LOWER(CONCAT('%', :condition, '%')) "
+            + "OR LOWER(h.city) LIKE LOWER(CONCAT('%', :condition, '%')) "
+            + "OR LOWER(h.street) LIKE LOWER(CONCAT('%', :condition, '%')))"
+            + "ORDER BY h.createDate DESC")
+    Page<House> getHouseSearchResult(String condition, Pageable pageable);
 }

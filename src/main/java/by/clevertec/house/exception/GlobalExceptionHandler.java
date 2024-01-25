@@ -163,13 +163,13 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Обрабатывает исключение {@link Exception} и возвращает соответствующий ResponseEntity с {@link BaseResponse}.
+     * Обрабатывает исключение {@link RuntimeException} и возвращает соответствующий ResponseEntity с {@link BaseResponse}.
      *
-     * @param exception Исключение {@link Exception}, которое требуется обработать.
+     * @param exception Исключение {@link RuntimeException}, которое требуется обработать.
      * @return ResponseEntity с {@link BaseResponse} и кодом состояния HTTP INTERNAL_SERVER_ERROR.
      */
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<BaseResponse> handleException(Exception exception) {
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<BaseResponse> handleException(RuntimeException exception) {
         ExceptionResponse response = getExceptionResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 OTHER_EXCEPTION_MESSAGE,

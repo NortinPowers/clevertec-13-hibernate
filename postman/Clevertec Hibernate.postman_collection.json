@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "a99b52a2-eb11-4e8e-859c-208bfe6e4a40",
+		"_postman_id": "6acd06a7-f622-488d-87b0-d5d1d2f3c8fe",
 		"name": "Clevertec Hibernate",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "25542323"
@@ -101,7 +101,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/persons/1064ef21-47d3-47fe-94bf-c239e8c27404",
+							"raw": "http://localhost:8080/persons/54eb483b-983e-43ce-ba25-0c8df8dc3ac0",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -109,7 +109,7 @@
 							"port": "8080",
 							"path": [
 								"persons",
-								"1064ef21-47d3-47fe-94bf-c239e8c27404"
+								"54eb483b-983e-43ce-ba25-0c8df8dc3ac0"
 							]
 						}
 					},
@@ -362,7 +362,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/persons/houses/owned/47c29808-fb03-4bf1-b5ae-1b8bd9704994",
+							"raw": "http://localhost:8080/persons/houses/owned/68cb6e30-02ff-480b-ba29-fd6b2ac10e1d",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -372,7 +372,7 @@
 								"persons",
 								"houses",
 								"owned",
-								"47c29808-fb03-4bf1-b5ae-1b8bd9704994"
+								"68cb6e30-02ff-480b-ba29-fd6b2ac10e1d"
 							]
 						}
 					},
@@ -395,6 +395,50 @@
 								"houses",
 								"owned",
 								"47c29808-fb03-4bf1-b5ae-1b8b49704994"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "changeHome /{uuid}/house/change/{houseUuid}",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/persons/60c70294-446b-424f-b74d-914bbf7edf42/house/change/49163031-c986-4224-90f6-a91240a4037b",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"persons",
+								"60c70294-446b-424f-b74d-914bbf7edf42",
+								"house",
+								"change",
+								"49163031-c986-4224-90f6-a91240a4037b"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/persons/search/ma",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"persons",
+								"search",
+								"ma"
 							]
 						}
 					},
@@ -455,7 +499,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/houses/29bf89c0-496a-4d0e-8c35-b4f0e1982be3",
+							"raw": "http://localhost:8080/houses/12439005-2757-4c42-bc80-d78745bfeab9",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -463,7 +507,7 @@
 							"port": "8080",
 							"path": [
 								"houses",
-								"29bf89c0-496a-4d0e-8c35-b4f0e1982be3"
+								"12439005-2757-4c42-bc80-d78745bfeab9"
 							]
 						}
 					},
@@ -532,7 +576,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/houses/95221acb-b769-4a60-b21f-cd90e5bb7c97",
+							"raw": "http://localhost:8080/houses/0bfd4796-c765-4f33-8f2e-dbbc092bfccd",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -540,7 +584,7 @@
 							"port": "8080",
 							"path": [
 								"houses",
-								"95221acb-b769-4a60-b21f-cd90e5bb7c97"
+								"0bfd4796-c765-4f33-8f2e-dbbc092bfccd"
 							]
 						}
 					},
@@ -581,7 +625,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/houses/c6e54583-8513-49f3-b247-0d75a81f10b6",
+							"raw": "http://localhost:8080/houses/dba7c0f5-8f15-46da-9507-85a5bb87bd77",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -589,7 +633,7 @@
 							"port": "8080",
 							"path": [
 								"houses",
-								"c6e54583-8513-49f3-b247-0d75a81f10b6"
+								"dba7c0f5-8f15-46da-9507-85a5bb87bd77"
 							]
 						}
 					},
@@ -621,7 +665,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/houses/95221acb-b769-4a60-b21f-cd90e5bb7c97/residents",
+							"raw": "http://localhost:8080/houses/253ca612-157f-4af8-a5f1-7e4e4fc0c4b9/residents",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -629,7 +673,7 @@
 							"port": "8080",
 							"path": [
 								"houses",
-								"95221acb-b769-4a60-b21f-cd90e5bb7c97",
+								"253ca612-157f-4af8-a5f1-7e4e4fc0c4b9",
 								"residents"
 							]
 						}
@@ -673,6 +717,143 @@
 								"houses",
 								"f50b8bb0-8837-445b-be6b-f395a748bac2",
 								"residents"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "addOwner /{uuid}/add/owner/{personUuid}",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/houses/12439005-2757-4c42-bc80-d78745bfeab9/add/owner/ab65bb28-8a01-481a-8df7-47ea77f9c9bf",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"houses",
+								"12439005-2757-4c42-bc80-d78745bfeab9",
+								"add",
+								"owner",
+								"ab65bb28-8a01-481a-8df7-47ea77f9c9bf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/houses/search/first",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"houses",
+								"search",
+								"first"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "HouseHistory",
+			"item": [
+				{
+					"name": "getHousebyResident",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/history/houses/resident/54eb483b-983e-43ce-ba25-0c8df8dc3ac0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"history",
+								"houses",
+								"resident",
+								"54eb483b-983e-43ce-ba25-0c8df8dc3ac0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getHousebyOwner",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/history/houses/owner/60c70294-446b-424f-b74d-914bbf7edf42",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"history",
+								"houses",
+								"owner",
+								"60c70294-446b-424f-b74d-914bbf7edf42"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getHouseOwners",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/history/owners/house/af93aa3b-5c5a-4266-9259-7d6570154bba",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"history",
+								"owners",
+								"house",
+								"af93aa3b-5c5a-4266-9259-7d6570154bba"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getHouseResidents",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/history/residents/house/49163031-c986-4224-90f6-a91240a4037b",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"history",
+								"residents",
+								"house",
+								"49163031-c986-4224-90f6-a91240a4037b"
 							]
 						}
 					},

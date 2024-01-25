@@ -5,16 +5,10 @@ import by.clevertec.house.dto.request.HouseRequestDto;
 import by.clevertec.house.dto.response.HouseResponseDto;
 import by.clevertec.house.mapper.annotation.CreateDateMapping;
 import by.clevertec.house.mapper.util.DateConverter;
-import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        injectionStrategy = InjectionStrategy.CONSTRUCTOR,
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(config = CustomMapperConfig.class)
 public interface HouseMapper extends DateConverter {
 
     /**

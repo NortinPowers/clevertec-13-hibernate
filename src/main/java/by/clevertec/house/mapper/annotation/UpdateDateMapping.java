@@ -20,8 +20,8 @@ import org.mapstruct.Mapping;
  *
  * <p>Аннотация применяется к методам.
  */
-@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
 @Mapping(target = "updated", expression = "java(convertToIsoDate(entity.getUpdateDate()))")
 public @interface UpdateDateMapping {
 }

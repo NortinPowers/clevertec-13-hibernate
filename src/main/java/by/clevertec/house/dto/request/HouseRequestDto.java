@@ -1,5 +1,6 @@
 package by.clevertec.house.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import java.util.UUID;
 import lombok.EqualsAndHashCode;
@@ -13,11 +14,22 @@ import lombok.Setter;
 @NoArgsConstructor
 public class HouseRequestDto {
 
+    @Schema(description = "identifier", example = "64a6c8d9-975a-47c2-8871-69cd7192b278")
     private UUID uuid;
+
+    @Schema(description = "area", example = "pennsylvania region")
     private String area;
+
+    @Schema(description = "country", example = "usa")
     private String country;
+
+    @Schema(description = "city", example = "philadelphia")
     private String city;
+
+    @Schema(description = "street", example = "elfreth’s alley")
     private String street;
+
+    @Schema(description = "number", example = "42")
     private String number;
     private List<UUID> residentUuids;
     private List<UUID> ownerUuids;

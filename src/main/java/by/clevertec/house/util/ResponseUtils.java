@@ -11,7 +11,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 @UtilityClass
 public class ResponseUtils {
 
-    public static final String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss.SSSSSS";
     public static final String CREATION_MESSAGE = "The %s have been successful created";
     public static final String UPDATE_MESSAGE = "The %s have been successful updated";
     public static final String DELETION_MESSAGE = "The %s have been successful deleted";
@@ -34,15 +33,15 @@ public class ResponseUtils {
     }
 
     /**
-     * Возвращает объект {@link MessageResponse} для успешного ответа с указанным сообщением,
-     * кодом состояния HTTP OK и именем класса, предоставленным в виде строки.
+     * Возвращает объект {@link MessageResponse} для успешного ответа с указанным сообщением и
+     * кодом состояния HTTP OK, предоставленным в виде строки.
      *
-     * @param message   Сообщение для включения в ответ.
-     * @param className Имя класса, используемое для формирования имени в ответе.
+     * @param message Сообщение для включения в ответ.
+     * @param value   Имя, используемое для формирования ответа.
      * @return Объект {@link MessageResponse} для успешного ответа.
      */
-    public static MessageResponse getSuccessResponse(String message, String className) {
-        return new MessageResponse(HttpStatus.OK.value(), String.format(message, className.toLowerCase()), className);
+    public static MessageResponse getSuccessResponse(String message, String value) {
+        return new MessageResponse(HttpStatus.OK.value(), String.format(message, value.toLowerCase()), value);
     }
 
     /**

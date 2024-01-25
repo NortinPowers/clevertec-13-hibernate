@@ -7,17 +7,18 @@ import by.clevertec.house.dto.response.HouseResponseDto;
 import by.clevertec.house.dto.response.PersonResponseDto;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface PersonService {
 
     /**
      * Получает список объектов {@link PersonResponseDto} с учетом параметров страницы и размера страницы.
      *
-     * @param pageNumber Номер страницы (начиная с 0).
-     * @param pageSize   Размер страницы, количество элементов на странице.
-     * @return Список объектов {@link PersonResponseDto} для текущей страницы и размера страницы.
+     * @param pageable Объект Pageable.
+     * @return Список объектов {@link PersonResponseDto} для текущей страницы и размера страницы обернутых в Page.
      */
-    List<PersonResponseDto> getAll(int pageNumber, int pageSize);
+    Page<PersonResponseDto> getAll(Pageable pageable);
 
     /**
      * Получает объект {@link PersonResponseDto} по уникальному идентификатору (UUID).
@@ -67,12 +68,7 @@ public interface PersonService {
      */
     List<HouseResponseDto> getOwnedHouses(UUID uuid);
 
-    /**
-     * Получает объект {@link PersonResponseDto} по имени.
-     *
-     * @param name Имя пользователя, по которому осуществляется поиск объекта {@link PersonResponseDto}.
-     * @return Объект {@link PersonResponseDto}, соответствующий указанному имени.
-     */
-    PersonResponseDto getByName(String name);
-}
+    void changeHome(UUID uuid, UUID homeUuid);
 
+    Page<PersonResponseDto> getPersonSearchResult(String condition, Pageable pageable);
+}

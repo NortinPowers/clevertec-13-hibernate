@@ -1,7 +1,7 @@
 package by.clevertec.house.util;
 
 import by.clevertec.house.exception.CustomNoContentException;
-import java.util.List;
+import java.util.Collection;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -30,7 +30,7 @@ public class CheckerUtil {
      * @param clazz   Класс объектов, для которого выполняется проверка.
      * @throws CustomNoContentException Если список объектов пуст.
      */
-    public static void checkList(List<?> objects, Class<?> clazz) {
+    public static void checkList(Collection<?> objects, Class<?> clazz) {
         if (objects.isEmpty()) {
             throw CustomNoContentException.of(clazz);
         }

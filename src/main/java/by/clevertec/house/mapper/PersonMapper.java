@@ -7,17 +7,11 @@ import by.clevertec.house.dto.response.PersonResponseDto;
 import by.clevertec.house.mapper.annotation.CreateDateMapping;
 import by.clevertec.house.mapper.annotation.UpdateDateMapping;
 import by.clevertec.house.mapper.util.DateConverter;
-import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        injectionStrategy = InjectionStrategy.CONSTRUCTOR,
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+@Mapper(config = CustomMapperConfig.class,
         uses = PassportMapper.class)
 public interface PersonMapper extends DateConverter {
 
