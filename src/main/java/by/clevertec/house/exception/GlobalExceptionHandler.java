@@ -1,6 +1,7 @@
 package by.clevertec.house.exception;
 
 import static by.clevertec.house.util.ResponseUtils.DATA_INTEGRITY_VIOLATION_EXCEPTION_MESSAGE;
+import static by.clevertec.house.util.ResponseUtils.HTTP_NOT_READABLE_EXCEPTION_MESSAGE;
 import static by.clevertec.house.util.ResponseUtils.METHOD_ARGUMENT_NOT_VALID_EXCEPTION_MESSAGE;
 import static by.clevertec.house.util.ResponseUtils.NOT_FOUND_EXCEPTION_MESSAGE;
 import static by.clevertec.house.util.ResponseUtils.OTHER_EXCEPTION_MESSAGE;
@@ -16,6 +17,7 @@ import jakarta.persistence.PersistenceException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -157,6 +159,16 @@ public class GlobalExceptionHandler {
         ExceptionResponse response = getExceptionResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 DATA_INTEGRITY_VIOLATION_EXCEPTION_MESSAGE,
+                exception
+        );
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    private ResponseEntity<BaseResponse> handleException(HttpMessageNotReadableException exception) {
+        ExceptionResponse response = getExceptionResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                HTTP_NOT_READABLE_EXCEPTION_MESSAGE,
                 exception
         );
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);

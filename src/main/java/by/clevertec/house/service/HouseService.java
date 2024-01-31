@@ -34,6 +34,11 @@ public interface HouseService {
      */
     UUID save(HouseRequestDto houseDto);
 
+    /**
+     * Сохраняет информацию о доме в базе данных.
+     *
+     * @param house Объект, представляющий дом, который необходимо сохранить.
+     */
     void save(House house);
 
     /**
@@ -59,9 +64,28 @@ public interface HouseService {
      */
     List<PersonResponseDto> getResidents(UUID uuid);
 
+    /**
+     * Добавляет владельца (человека) с указанным идентификатором к дому с указанным идентификатором.
+     *
+     * @param uuid       Идентификатор дома, к которому нужно добавить владельца.
+     * @param personUuid Идентификатор владельца, который будет добавлен к дому.
+     */
     void addOwner(UUID uuid, UUID personUuid);
 
+    /**
+     * Удаляет владельца (человека) с указанным идентификатором из дома с указанным идентификатором.
+     *
+     * @param uuid       Идентификатор дома, из которого нужно удалить владельца.
+     * @param personUuid Идентификатор владельца, который будет удален из дома.
+     */
     void deleteOwner(UUID uuid, UUID personUuid);
 
+    /**
+     * Выполняет поиск домов по заданным критериям и возвращает результаты в виде страницы DTO домов.
+     *
+     * @param condition Условие поиска, которое может соответствовать части адреса дома (область, страна, город, улица).
+     * @param pageable  Интерфейс для представления информации о странице результатов запроса.
+     * @return Страница с результатами поиска в виде DTO домов.
+     */
     Page<HouseResponseDto> getHouseSearchResult(String condition, Pageable pageable);
 }

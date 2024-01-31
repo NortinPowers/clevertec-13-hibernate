@@ -2,7 +2,7 @@ package by.clevertec.house.service;
 
 import by.clevertec.house.domain.Person;
 import by.clevertec.house.dto.request.PersonPathRequestDto;
-import by.clevertec.house.dto.request.PersonPutRequestDto;
+import by.clevertec.house.dto.request.PersonRequestDto;
 import by.clevertec.house.dto.response.HouseResponseDto;
 import by.clevertec.house.dto.response.PersonResponseDto;
 import java.util.List;
@@ -29,19 +29,19 @@ public interface PersonService {
     PersonResponseDto getByUuid(UUID uuid);
 
     /**
-     * Сохраняет объект {@link PersonPutRequestDto} в виде нового объекта {@link Person}.
+     * Сохраняет объект {@link PersonRequestDto} в виде нового объекта {@link Person}.
      *
-     * @param person Объект {@link PersonPutRequestDto}, который требуется сохранить в виде нового пользователя.
+     * @param person Объект {@link PersonRequestDto}, который требуется сохранить в виде нового пользователя.
      */
-    void save(PersonPutRequestDto person);
+    void save(PersonRequestDto person);
 
     /**
      * Обновляет данные объекта {@link Person} по уникальному идентификатору (UUID).
      *
      * @param uuid   Уникальный идентификатор (UUID) объекта {@link Person}, который требуется обновить.
-     * @param person Объект {@link PersonPutRequestDto}, содержащий обновленные данные.
+     * @param person Объект {@link PersonRequestDto}, содержащий обновленные данные.
      */
-    void update(UUID uuid, PersonPutRequestDto person);
+    void update(UUID uuid, PersonRequestDto person);
 
     /**
      * Обновляет данные объекта {@link Person} по уникальному идентификатору (UUID) с использованием
@@ -68,7 +68,20 @@ public interface PersonService {
      */
     List<HouseResponseDto> getOwnedHouses(UUID uuid);
 
+    /**
+     * Изменяет место проживания человека с указанным идентификатором, присваивая ему новый дом.
+     *
+     * @param uuid     Идентификатор человека, для которого необходимо изменить место проживания.
+     * @param homeUuid Идентификатор нового дома, который будет назначен в качестве места проживания.
+     */
     void changeHome(UUID uuid, UUID homeUuid);
 
+    /**
+     * Выполняет поиск людей по заданным критериям имени или фамилии и возвращает результаты в виде страницы DTO людей.
+     *
+     * @param condition Условие поиска, которое может соответствовать части имени или фамилии человека.
+     * @param pageable  Интерфейс для представления информации о странице результатов запроса.
+     * @return Страница с результатами поиска в виде DTO людей.
+     */
     Page<PersonResponseDto> getPersonSearchResult(String condition, Pageable pageable);
 }

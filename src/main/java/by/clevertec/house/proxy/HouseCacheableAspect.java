@@ -24,15 +24,15 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class HouseCacheableAspect {
 
+    private final HouseRepository houseRepository;
+    private final HouseMapper mapper;
+
     @Value("${cache.algorithm}")
     private String algorithm;
 
     @Value("${cache.max-collection-size}")
     private Integer maxCollectionSize;
-
     private Cache<UUID, Object> cache = configureCache();
-    private final HouseRepository houseRepository;
-    private final HouseMapper mapper;
 
     @SuppressWarnings("checkstyle:IllegalCatch")
     @Around("@annotation(by.clevertec.house.proxy.Cacheable) && execution(* by.clevertec.house.service.HouseService.getByUuid(..))")

@@ -2,7 +2,7 @@ package by.clevertec.house.mapper;
 
 import by.clevertec.house.domain.Person;
 import by.clevertec.house.dto.request.PersonPathRequestDto;
-import by.clevertec.house.dto.request.PersonPutRequestDto;
+import by.clevertec.house.dto.request.PersonRequestDto;
 import by.clevertec.house.dto.response.PersonResponseDto;
 import by.clevertec.house.mapper.annotation.CreateDateMapping;
 import by.clevertec.house.mapper.annotation.UpdateDateMapping;
@@ -29,12 +29,12 @@ public interface PersonMapper extends DateConverter {
     PersonResponseDto toDto(Person entity);
 
     /**
-     * Преобразует объект типа {@link PersonPutRequestDto} в объект {@link Person}.
+     * Преобразует объект типа {@link PersonRequestDto} в объект {@link Person}.
      *
-     * @param dto Объект типа {@link PersonPutRequestDto}, который требуется преобразовать в {@link Person}.
-     * @return Объект {@link Person}, созданный на основе данных из объекта {@link PersonPutRequestDto}.
+     * @param dto Объект типа {@link PersonRequestDto}, который требуется преобразовать в {@link Person}.
+     * @return Объект {@link Person}, созданный на основе данных из объекта {@link PersonRequestDto}.
      */
-    Person toDomain(PersonPutRequestDto dto);
+    Person toDomain(PersonRequestDto dto);
 
     /**
      * Преобразует объект типа {@link PersonPathRequestDto} в объект {@link Person}.

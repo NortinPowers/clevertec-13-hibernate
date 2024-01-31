@@ -28,18 +28,37 @@ public interface HouseRepository extends JpaRepository<House, Long> {
      */
     void deleteByUuid(UUID uuid);
 
+    /**
+     * Метод для поиска всех домов, в которых проживает жилец с указанным идентификатором.
+     *
+     * @param personUuid Идентификатор жильца.
+     * @return Список домов, в которых проживает указанный жилец.
+     */
     @Query("SELECT DISTINCT h FROM House h "
             + "JOIN FETCH HouseHistory hh ON h = hh.house "
             + "JOIN FETCH Person p ON hh.person = p "
             + "WHERE p.uuid = :personUuid AND hh.status = 'TENANT'")
     List<House> findAllByResidentUuid(UUID personUuid);
 
+    /**
+     * Метод для поиска всех домов, которые принадлежат владельцу с указанным идентификатором.
+     *
+     * @param personUuid Идентификатор владельца.
+     * @return Список домов, принадлежащих указанному владельцу.
+     */
     @Query("SELECT DISTINCT h FROM House h "
             + "JOIN FETCH HouseHistory hh ON h = hh.house "
             + "JOIN FETCH Person p ON hh.person = p "
             + "WHERE p.uuid = :personUuid AND hh.status = 'OWNER'")
     List<House> findAllByOwnersUuid(UUID personUuid);
 
+    /**
+     * Метод для поиска домов по заданным критериям и сортировкой по дате создания в убывающем порядке.
+     *
+     * @param condition Условие поиска, которое может соответствовать части адреса дома (область, страна, город, улица).
+     * @param pageable  Интерфейс для представления информации о странице результатов запроса.
+     * @return Страница с результатами поиска домов.
+     */
     @Query("SELECT DISTINCT h FROM House h "
             + "WHERE (LOWER(h.area) LIKE LOWER(CONCAT('%', :condition, '%')) "
             + "OR LOWER(h.country) LIKE LOWER(CONCAT('%', :condition, '%')) "

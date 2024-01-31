@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class HouseHouseHistoryServiceImpl implements HouseHistoryService {
+public class HouseHistoryServiceImpl implements HouseHistoryService {
 
     private final HouseRepository houseRepository;
     private final HouseMapper houseMapper;

@@ -8,8 +8,8 @@ import by.clevertec.house.dto.PassportDto;
 import lombok.Builder;
 import lombok.Data;
 
-@Builder(setterPrefix = "with")
 @Data
+@Builder(setterPrefix = "with")
 public class PassportTestBuilder {
 
     @Builder.Default

@@ -8,6 +8,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER tenant_change_trigger
-AFTER UPDATE OF house_id ON persons
+AFTER INSERT OR UPDATE OF house_id ON persons
 FOR EACH ROW
 EXECUTE FUNCTION add_tenant_history();

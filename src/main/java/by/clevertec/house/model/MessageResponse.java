@@ -9,6 +9,7 @@ import lombok.Setter;
 public class MessageResponse extends BaseResponse {
 
     private String message;
+
     @JsonIgnore
     private Object object;
 

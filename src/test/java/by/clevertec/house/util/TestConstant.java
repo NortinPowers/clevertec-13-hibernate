@@ -9,6 +9,7 @@ import lombok.experimental.UtilityClass;
 public class TestConstant {
 
     public static final UUID HOUSE_UUID = UUID.fromString("8e7daff2-df9a-4130-94af-1b4bc6ed3beb");
+    public static final UUID ANOUTHER_HOUSE_UUID = UUID.fromString("2e7435dd-0a2c-4d87-b494-e66a228bd12b");
     public static final UUID PERSON_UUID = UUID.fromString("d7f21e40-6a65-4060-946a-600798656f68");
     public static final UUID INCORRECT_UUID = UUID.fromString("010a71b3-1de3-43ac-ab98-130910fd8130");
     public static final UUID CORRECT_UUID = UUID.fromString("c05c4c2b-2510-4dda-99da-c0070a224cf8");

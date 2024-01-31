@@ -18,10 +18,7 @@ import lombok.Setter;
 @Setter
 @EqualsAndHashCode
 @NoArgsConstructor
-public class PersonPutRequestDto {
-
-    @Schema(description = "identifier", example = "c370a441-208d-46b4-902b-19de3e6d795b")
-    private UUID uuid;
+public class PersonRequestDto {
 
     @NotBlank(message = "Enter name")
     @Schema(description = "name", example = "john")

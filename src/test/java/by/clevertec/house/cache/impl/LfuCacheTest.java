@@ -17,8 +17,11 @@ class LfuCacheTest {
         lfuCache.put(1, ONE);
         lfuCache.put(2, TWO);
         lfuCache.put(3, THREE);
+
         assertEquals(ONE, lfuCache.get(1));
+
         lfuCache.put(4, "Four");
+
         assertNull(lfuCache.get(2));
     }
 
@@ -28,6 +31,7 @@ class LfuCacheTest {
         lfuCache.put(1, ONE);
         lfuCache.put(2, TWO);
         lfuCache.put(3, THREE);
+
         assertEquals(ONE, lfuCache.get(1));
         assertEquals(TWO, lfuCache.get(2));
         assertEquals(THREE, lfuCache.get(3));
@@ -39,7 +43,9 @@ class LfuCacheTest {
         lfuCache.put(1, ONE);
         lfuCache.put(2, TWO);
         lfuCache.put(3, THREE);
+
         lfuCache.remove(2);
+
         assertNull(lfuCache.get(2));
     }
 }

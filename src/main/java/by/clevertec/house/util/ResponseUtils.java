@@ -13,12 +13,20 @@ public class ResponseUtils {
 
     public static final String CREATION_MESSAGE = "The %s have been successful created";
     public static final String UPDATE_MESSAGE = "The %s have been successful updated";
+    public static final String ADDED_HOUSE_OWNER_MESSAGE = "The new owner has been successfully added to the house (uuid:%s)";
+    public static final String DELETED_HOUSE_OWNER_MESSAGE = "The owner has been successfully deleted to the house (uuid:%s)";
+    public static final String PERSON_CHANGE_HOUSE_MESSAGE = "The place of residence for the person (uuid:%s) has been successfully changed";
     public static final String DELETION_MESSAGE = "The %s have been successful deleted";
     public static final String NOT_FOUND_EXCEPTION_MESSAGE = "Specify the entered data";
     public static final String OTHER_EXCEPTION_MESSAGE = "Unexpected error";
     public static final String DATA_INTEGRITY_VIOLATION_EXCEPTION_MESSAGE = "The input data does not correspond to the required";
     public static final String UNIQUE_CONSTRAINT_VIOLATION_EXCEPTION_MESSAGE = "Unique constraint violation";
     public static final String METHOD_ARGUMENT_NOT_VALID_EXCEPTION_MESSAGE = "The transmitted data did not pass verification";
+    public static final String HTTP_NOT_READABLE_EXCEPTION_MESSAGE = "The entered data is incorrect and leads to an error";
+    public static final String CONDITIONAL_EXCEPTION_MESSAGE = "Сan not delete a house in which at least 1 person lives";
+    public static final String CONDITIONAL_HOUSE_OWNER_EXIST_EXCEPTION_MESSAGE = "The person is already the owner of the house";
+    public static final String CONDITIONAL_RESIDENT_EXIST_EXCEPTION_MESSAGE = "The person already lives in this house";
+    public static final String CONDITIONAL_HOUSE_OWNER_NOT_EXIST_EXCEPTION_MESSAGE = "The person is not the owner of the house";
 
     /**
      * Возвращает объект {@link MessageResponse} для успешного ответа с указанным сообщением,

@@ -16,7 +16,7 @@ import by.clevertec.house.domain.Passport;
 import by.clevertec.house.domain.Person;
 import by.clevertec.house.dto.PassportDto;
 import by.clevertec.house.dto.request.PersonPathRequestDto;
-import by.clevertec.house.dto.request.PersonPutRequestDto;
+import by.clevertec.house.dto.request.PersonRequestDto;
 import by.clevertec.house.dto.response.PersonResponseDto;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,8 +25,8 @@ import java.util.UUID;
 import lombok.Builder;
 import lombok.Data;
 
-@Builder(setterPrefix = "with")
 @Data
+@Builder(setterPrefix = "with")
 public class PersonTestBuilder {
 
     @Builder.Default
@@ -87,7 +87,6 @@ public class PersonTestBuilder {
 
     public PersonPathRequestDto buildPersonPathRequestDto() {
         PersonPathRequestDto person = new PersonPathRequestDto();
-        person.setUuid(uuid);
         person.setName(name);
         person.setSurname(surname);
         person.setGender(gender);
@@ -97,9 +96,8 @@ public class PersonTestBuilder {
         return person;
     }
 
-    public PersonPutRequestDto buildPersonPutRequestDto() {
-        PersonPutRequestDto person = new PersonPutRequestDto();
-        person.setUuid(uuid);
+    public PersonRequestDto buildPersonRequestDto() {
+        PersonRequestDto person = new PersonRequestDto();
         person.setName(name);
         person.setSurname(surname);
         person.setGender(gender);

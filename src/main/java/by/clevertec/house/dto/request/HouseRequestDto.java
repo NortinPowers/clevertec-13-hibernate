@@ -14,9 +14,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class HouseRequestDto {
 
-    @Schema(description = "identifier", example = "64a6c8d9-975a-47c2-8871-69cd7192b278")
-    private UUID uuid;
-
     @Schema(description = "area", example = "pennsylvania region")
     private String area;
 

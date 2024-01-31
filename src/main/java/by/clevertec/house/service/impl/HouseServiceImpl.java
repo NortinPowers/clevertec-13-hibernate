@@ -1,6 +1,9 @@
 package by.clevertec.house.service.impl;
 
 import static by.clevertec.house.util.CheckerUtil.checkList;
+import static by.clevertec.house.util.ResponseUtils.CONDITIONAL_EXCEPTION_MESSAGE;
+import static by.clevertec.house.util.ResponseUtils.CONDITIONAL_HOUSE_OWNER_EXIST_EXCEPTION_MESSAGE;
+import static by.clevertec.house.util.ResponseUtils.CONDITIONAL_HOUSE_OWNER_NOT_EXIST_EXCEPTION_MESSAGE;
 
 import by.clevertec.house.domain.House;
 import by.clevertec.house.domain.Person;
@@ -92,7 +95,7 @@ public class HouseServiceImpl implements HouseService {
             if (houseOptional.get().getResidents().isEmpty()) {
                 houseRepository.deleteByUuid(uuid);
             } else {
-                throw new ConditionalException("Сan not delete a house in which at least 1 person lives");
+                throw new ConditionalException(CONDITIONAL_EXCEPTION_MESSAGE);
             }
         } else {
             throw CustomEntityNotFoundException.of(House.class, uuid);
@@ -125,10 +128,12 @@ public class HouseServiceImpl implements HouseService {
                 Person person = optionalPerson.get();
                 Set<Person> owners = house.getOwners();
                 if (owners.stream().anyMatch(p -> p.equals(person))) {
-                    throw new ConditionalException("The person is already the owner of the house");
+                    throw new ConditionalException(CONDITIONAL_HOUSE_OWNER_EXIST_EXCEPTION_MESSAGE);
                 }
                 owners.add(optionalPerson.get());
                 houseRepository.save(house);
+            } else {
+                throw CustomEntityNotFoundException.of(Person.class, personUuid);
             }
         } else {
             throw CustomEntityNotFoundException.of(House.class, uuid);
@@ -147,8 +152,10 @@ public class HouseServiceImpl implements HouseService {
                 owners.stream()
                         .filter(p -> p.equals(person))
                         .findAny()
-                        .orElseThrow(() -> new ConditionalException("The person is not the owner of the house"));
+                        .orElseThrow(() -> new ConditionalException(CONDITIONAL_HOUSE_OWNER_NOT_EXIST_EXCEPTION_MESSAGE));
                 owners.removeIf(owner -> owner.getUuid().equals(optionalPerson.get().getUuid()));
+            } else {
+                throw CustomEntityNotFoundException.of(Person.class, personUuid);
             }
         } else {
             throw CustomEntityNotFoundException.of(House.class, uuid);

@@ -151,3 +151,18 @@
 
 1. Swagger документация доступна по http://localhost:8080/documentation
 2. Обновление таблицы HouseHistory реализовано с помощью триггеров БД
+
+<h3> Task SpringBootTest </h3>
+
+1. Берём за основу существующее приложение и покрываем его тестами на 80%, используя средства Spring для тестирования:
+-  testcontainers
+-  mockMvc
+-  *wireMock
+
+* Добавляем swagger
+
+<h3>Использование</h3>
+
+1. Для части тестов необходимо включить Docker
+
+![Тесты](img/coverage.png)

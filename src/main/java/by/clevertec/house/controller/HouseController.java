@@ -1,6 +1,8 @@
 package by.clevertec.house.controller;
 
+import static by.clevertec.house.util.ResponseUtils.ADDED_HOUSE_OWNER_MESSAGE;
 import static by.clevertec.house.util.ResponseUtils.CREATION_MESSAGE;
+import static by.clevertec.house.util.ResponseUtils.DELETED_HOUSE_OWNER_MESSAGE;
 import static by.clevertec.house.util.ResponseUtils.DELETION_MESSAGE;
 import static by.clevertec.house.util.ResponseUtils.UPDATE_MESSAGE;
 import static by.clevertec.house.util.ResponseUtils.getSuccessResponse;
@@ -55,7 +57,6 @@ public class HouseController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = HouseResponseDto.class)), mediaType = APPLICATION_JSON_VALUE)}),
-            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)}),
             @ApiResponse(responseCode = "410", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)}),
             @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)})})
     public ResponseEntity<Page<HouseResponseDto>> getAll(@Parameter(name = "Pageable parameters", example = "page=0&size=15&sort=created,asc")
@@ -178,23 +179,53 @@ public class HouseController {
     }
 
     @PatchMapping("/{uuid}/add/owner/{personUuid}")
+    @Operation(
+            summary = "Adds a new owner (by its uuid) to the house (by its uuid)",
+            description = "Add an owner (by its uuid) to the house by specifying its uuid. The response is a message about the successful addition of the owner",
+            tags = "patch"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = PersonResponseDto.class)), mediaType = APPLICATION_JSON_VALUE)}),
+            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)}),
+            @ApiResponse(responseCode = "406", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)}),
+            @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)})})
     public ResponseEntity<BaseResponse> addOwner(@PathVariable UUID uuid,
                                                  @PathVariable UUID personUuid) {
         houseService.addOwner(uuid, personUuid);
-        return ResponseEntity.ok(getSuccessResponse("The new owner has been successfully added to the house (uuid:%s)", uuid.toString()));
+        return ResponseEntity.ok(getSuccessResponse(ADDED_HOUSE_OWNER_MESSAGE, uuid.toString()));
     }
 
     @PatchMapping("/{uuid}/delete/owner/{personUuid}")
+    @Operation(
+            summary = "Delete owner (by its uuid) to the house (by its uuid)",
+            description = "Delete an owner (by its uuid) to the house by specifying its uuid. The response is a message about the successful deletion of the owner",
+            tags = "patch"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = PersonResponseDto.class)), mediaType = APPLICATION_JSON_VALUE)}),
+            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)}),
+            @ApiResponse(responseCode = "406", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)}),
+            @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)})})
     public ResponseEntity<BaseResponse> deleteOwner(@PathVariable UUID uuid,
                                                     @PathVariable UUID personUuid) {
         houseService.deleteOwner(uuid, personUuid);
-        return ResponseEntity.ok(getSuccessResponse("The owner has been successfully deleted to the house (uuid:%s)", uuid.toString()));
+        return ResponseEntity.ok(getSuccessResponse(DELETED_HOUSE_OWNER_MESSAGE, uuid.toString()));
     }
 
-
     @GetMapping("/search/{condition}")
+    @Operation(
+            summary = "Retrieves a page of houses from the list of all houses found by the search condition depending on the page",
+            description = "Collect houses from the list of all houses according to the search condition. The default page size is 15 elements. The answer is an array of houses with uuid, area, country, city, street, number and created for each element of the array",
+            tags = "get"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = HouseResponseDto.class)), mediaType = APPLICATION_JSON_VALUE)}),
+            @ApiResponse(responseCode = "410", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)}),
+            @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)})})
     public ResponseEntity<Page<HouseResponseDto>> getHouseSearchResult(@PathVariable String condition,
-                                                                       Pageable pageable) {
+                                                                       @Parameter(name = "Pageable parameters", example = "page=0&size=15&sort=created,asc")
+                                                                       @PageableDefault(size = 15)
+                                                                       @ParameterObject Pageable pageable) {
         return ResponseEntity.ok(houseService.getHouseSearchResult(condition, pageable));
     }
 }

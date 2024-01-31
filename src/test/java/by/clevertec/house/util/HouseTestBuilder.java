@@ -22,8 +22,8 @@ import java.util.UUID;
 import lombok.Builder;
 import lombok.Data;
 
-@Builder(setterPrefix = "with")
 @Data
+@Builder(setterPrefix = "with")
 public class HouseTestBuilder {
 
     @Builder.Default
@@ -78,7 +78,6 @@ public class HouseTestBuilder {
 
     public HouseRequestDto buildHouseRequestDto() {
         HouseRequestDto houseRequestDto = new HouseRequestDto();
-        houseRequestDto.setUuid(uuid);
         houseRequestDto.setArea(area);
         houseRequestDto.setCountry(country);
         houseRequestDto.setCity(city);

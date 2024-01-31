@@ -3,13 +3,14 @@ package by.clevertec.house.controller;
 import static by.clevertec.house.util.CheckerUtil.checkIllegalArgument;
 import static by.clevertec.house.util.ResponseUtils.CREATION_MESSAGE;
 import static by.clevertec.house.util.ResponseUtils.DELETION_MESSAGE;
+import static by.clevertec.house.util.ResponseUtils.PERSON_CHANGE_HOUSE_MESSAGE;
 import static by.clevertec.house.util.ResponseUtils.UPDATE_MESSAGE;
 import static by.clevertec.house.util.ResponseUtils.getSuccessResponse;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import by.clevertec.house.domain.Person;
 import by.clevertec.house.dto.request.PersonPathRequestDto;
-import by.clevertec.house.dto.request.PersonPutRequestDto;
+import by.clevertec.house.dto.request.PersonRequestDto;
 import by.clevertec.house.dto.response.HouseResponseDto;
 import by.clevertec.house.dto.response.PersonResponseDto;
 import by.clevertec.house.model.BaseResponse;
@@ -61,7 +62,6 @@ public class PersonController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = PersonResponseDto.class)), mediaType = APPLICATION_JSON_VALUE)}),
-            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)}),
             @ApiResponse(responseCode = "410", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)}),
             @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)})})
     public ResponseEntity<Page<PersonResponseDto>> getAll(@Parameter(name = "Pageable parameters", example = "page=0&size=15&sort=created,asc")
@@ -94,7 +94,7 @@ public class PersonController {
     /**
      * Сохраняет новую персону на основе предоставленных данных.
      *
-     * @param person Объект {@link PersonPutRequestDto}, содержащий данные новой персоны.
+     * @param person Объект {@link PersonRequestDto}, содержащий данные новой персоны.
      * @return {@link ResponseEntity} с объектом {@link BaseResponse} для успешного ответа.
      */
     @PostMapping
@@ -109,7 +109,7 @@ public class PersonController {
             @ApiResponse(responseCode = "400", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = ErrorValidationResponse.class)), mediaType = APPLICATION_JSON_VALUE)}),
             @ApiResponse(responseCode = "409", content = {@Content(schema = @Schema(implementation = BaseResponse.class), mediaType = APPLICATION_JSON_VALUE)}),
             @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)})})
-    public ResponseEntity<BaseResponse> save(@Valid @RequestBody PersonPutRequestDto person) {
+    public ResponseEntity<BaseResponse> save(@Valid @RequestBody PersonRequestDto person) {
         personService.save(person);
         return ResponseEntity.ok(getSuccessResponse(CREATION_MESSAGE, Person.class));
     }
@@ -118,7 +118,7 @@ public class PersonController {
      * Обновляет данные персоны по её уникальному идентификатору.
      *
      * @param uuid   Уникальный идентификатор персоны, которую требуется обновить.
-     * @param person Объект {@link PersonPutRequestDto}, содержащий обновленные данные персоны.
+     * @param person Объект {@link PersonRequestDto}, содержащий обновленные данные персоны.
      * @return {@link ResponseEntity} с объектом {@link BaseResponse} для успешного ответа.
      */
     @PutMapping("/{uuid}")
@@ -134,7 +134,7 @@ public class PersonController {
             @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)}),
             @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)})})
     public ResponseEntity<BaseResponse> update(@PathVariable UUID uuid,
-                                               @Valid @RequestBody PersonPutRequestDto person) {
+                                               @Valid @RequestBody PersonRequestDto person) {
         personService.update(uuid, person);
         return ResponseEntity.ok(getSuccessResponse(UPDATE_MESSAGE, Person.class));
     }
@@ -202,6 +202,7 @@ public class PersonController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = HouseResponseDto.class)), mediaType = APPLICATION_JSON_VALUE)}),
+            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)}),
             @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)}),
             @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)})})
     public ResponseEntity<List<HouseResponseDto>> getOwnedHouses(@PathVariable UUID uuid) {
@@ -210,15 +211,36 @@ public class PersonController {
     }
 
     @PatchMapping("/{uuid}/house/change/{houseUuid}")
+    @Operation(
+            summary = "Moves the person (by its uuid) to another house (by its uuid)",
+            description = "Move a person (by its uuid) into a house by specifying its uuid. The response will be a message about the successful transfer of a person",
+            tags = "patch"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = PersonResponseDto.class)), mediaType = APPLICATION_JSON_VALUE)}),
+            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)}),
+            @ApiResponse(responseCode = "410", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)}),
+            @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)})})
     public ResponseEntity<BaseResponse> changeHome(@PathVariable UUID uuid,
                                                    @PathVariable UUID houseUuid) {
         personService.changeHome(uuid, houseUuid);
-        return ResponseEntity.ok(getSuccessResponse("The place of residence for the person (uuid:%s) has been successfully changed", uuid.toString()));
+        return ResponseEntity.ok(getSuccessResponse(PERSON_CHANGE_HOUSE_MESSAGE, uuid.toString()));
     }
 
     @GetMapping("/search/{condition}")
+    @Operation(
+            summary = "Retrieves a page of persons from the list of all persons found by the search condition depending on the page",
+            description = "Collect persons from the list of all persons according to the search condition. The default page size is 15 elements. The answer is an array of people with uuid, name, surname, gender, passport (array of passportSeries and passportNumber), created, updated and houseUuid for each of the array element",
+            tags = "get"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = HouseResponseDto.class)), mediaType = APPLICATION_JSON_VALUE)}),
+            @ApiResponse(responseCode = "410", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)}),
+            @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema(implementation = ExceptionResponse.class), mediaType = APPLICATION_JSON_VALUE)})})
     public ResponseEntity<Page<PersonResponseDto>> getPersonSearchResult(@PathVariable String condition,
-                                                                         Pageable pageable) {
+                                                                         @Parameter(name = "Pageable parameters", example = "page=0&size=15&sort=created,asc")
+                                                                         @PageableDefault(size = 15)
+                                                                         @ParameterObject Pageable pageable) {
         return ResponseEntity.ok(personService.getPersonSearchResult(condition, pageable));
     }
 }

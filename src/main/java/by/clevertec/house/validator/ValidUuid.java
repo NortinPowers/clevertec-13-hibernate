@@ -21,9 +21,9 @@ import java.lang.annotation.Target;
  * <p>Данная аннотация помечает поле, которое должно содержать корректный идентификатор UUID.
  */
 @Documented
-@Constraint(validatedBy = UuidValidator.class)
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
+@Constraint(validatedBy = UuidValidator.class)
 public @interface ValidUuid {
 
     String message() default "Invalid uuid";

@@ -5,32 +5,28 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import by.clevertec.house.controller.HouseController;
 import by.clevertec.house.controller.HouseHistoryController;
 import by.clevertec.house.controller.PersonController;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class HouseApplicationTests {
+@RequiredArgsConstructor
+class HouseApplicationTests extends AbstractTest {
 
-    @Autowired
-    private HouseController houseController;
-    @Autowired
-    private HouseHistoryController houseHistoryController;
-    @Autowired
-    private PersonController personController;
+    private final HouseController houseController;
+    private final HouseHistoryController houseHistoryController;
+    private final PersonController personController;
 
     @Test
-    void houseControllerMustBeNotNull() {
+    void houseControllerMustBeNotNull_whenContextLoaded() {
         assertThat(houseController).isNotNull();
     }
 
     @Test
-    void houseHistoryControllerMustBeNotNull() {
+    void houseHistoryControllerMustBeNotNull_whenContextLoaded() {
         assertThat(houseHistoryController).isNotNull();
     }
 
     @Test
-    void personControllerMustBeNotNull() {
+    void personControllerMustBeNotNull_whenContextLoaded() {
         assertThat(personController).isNotNull();
     }
 }

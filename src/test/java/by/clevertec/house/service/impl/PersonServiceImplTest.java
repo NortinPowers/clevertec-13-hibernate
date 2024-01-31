@@ -1,10 +1,12 @@
 package by.clevertec.house.service.impl;
 
+import static by.clevertec.house.util.ResponseUtils.CONDITIONAL_RESIDENT_EXIST_EXCEPTION_MESSAGE;
 import static by.clevertec.house.util.TestConstant.CORRECT_UUID;
 import static by.clevertec.house.util.TestConstant.HOUSE_UUID;
 import static by.clevertec.house.util.TestConstant.INCORRECT_UUID;
 import static by.clevertec.house.util.TestConstant.PAGE_NUMBER;
 import static by.clevertec.house.util.TestConstant.PAGE_SIZE;
+import static by.clevertec.house.util.TestConstant.PERSON_UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -16,8 +18,9 @@ import static org.mockito.Mockito.when;
 
 import by.clevertec.house.domain.House;
 import by.clevertec.house.domain.Person;
-import by.clevertec.house.dto.request.PersonPutRequestDto;
+import by.clevertec.house.dto.request.PersonRequestDto;
 import by.clevertec.house.dto.response.PersonResponseDto;
+import by.clevertec.house.exception.ConditionalException;
 import by.clevertec.house.exception.CustomEntityNotFoundException;
 import by.clevertec.house.exception.CustomNoContentException;
 import by.clevertec.house.mapper.PersonMapper;
@@ -25,6 +28,7 @@ import by.clevertec.house.repository.HouseRepository;
 import by.clevertec.house.repository.PersonRepository;
 import by.clevertec.house.util.HouseTestBuilder;
 import by.clevertec.house.util.PersonTestBuilder;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -44,7 +48,7 @@ import org.springframework.data.domain.PageRequest;
 class PersonServiceImplTest {
 
     @Mock
-    private PersonMapper mapper;
+    private PersonMapper personMapper;
 
     @Mock
     private PersonRepository personRepository;
@@ -77,7 +81,7 @@ class PersonServiceImplTest {
 
             when(personRepository.findAll(pageRequest))
                     .thenReturn(page);
-            when(mapper.toDto(person))
+            when(personMapper.toDto(person))
                     .thenReturn(personResponseDto);
 
             Page<PersonResponseDto> actual = personService.getAll(pageRequest);
@@ -99,7 +103,7 @@ class PersonServiceImplTest {
             CustomNoContentException actualException = assertThrows(CustomNoContentException.class, () -> personService.getAll(pageRequest));
 
             assertEquals(expectedException.getMessage(), actualException.getMessage());
-            verify(mapper, never()).toDto(any(Person.class));
+            verify(personMapper, never()).toDto(any(Person.class));
         }
     }
 
@@ -119,7 +123,7 @@ class PersonServiceImplTest {
 
             when(personRepository.findByUuid(uuid))
                     .thenReturn(optionalPerson);
-            when(mapper.toDto(person))
+            when(personMapper.toDto(person))
                     .thenReturn(expected);
 
             PersonResponseDto actual = personService.getByUuid(uuid);
@@ -144,7 +148,7 @@ class PersonServiceImplTest {
 
             CustomEntityNotFoundException actualException = assertThrows(CustomEntityNotFoundException.class, () -> personService.getByUuid(INCORRECT_UUID));
 
-            verify(mapper, never()).toDto(any(Person.class));
+            verify(personMapper, never()).toDto(any(Person.class));
             assertEquals(expectedException.getMessage(), actualException.getMessage());
         }
     }
@@ -154,9 +158,9 @@ class PersonServiceImplTest {
 
         @Test
         void saveShouldInvokeRepositoryAndNotSaveHouses_whenPersonRequestDtoTransferredWithEmptyHousesOwners() {
-            PersonPutRequestDto personRequestDto = PersonTestBuilder.builder()
+            PersonRequestDto personRequestDto = PersonTestBuilder.builder()
                     .build()
-                    .buildPersonPutRequestDto();
+                    .buildPersonRequestDto();
             Person person = PersonTestBuilder.builder()
                     .withUuid(null)
                     .build()
@@ -166,7 +170,7 @@ class PersonServiceImplTest {
                     .buildHouse();
             Optional<House> optionalHouse = Optional.of(house);
 
-            when(mapper.toDomain(personRequestDto))
+            when(personMapper.toDomain(personRequestDto))
                     .thenReturn(person);
             when(houseRepository.findByUuid(HOUSE_UUID))
                     .thenReturn(optionalHouse);
@@ -180,10 +184,10 @@ class PersonServiceImplTest {
         @Test
         void saveShouldInvokeRepositoryAndSaveHouse_whenPersonRequestDtoTransferredWithHousesOwners() {
             List<UUID> ownedHouseUuids = List.of(CORRECT_UUID);
-            PersonPutRequestDto personRequestDto = PersonTestBuilder.builder()
+            PersonRequestDto personRequestDto = PersonTestBuilder.builder()
                     .withOwnedHouseUuids(ownedHouseUuids)
                     .build()
-                    .buildPersonPutRequestDto();
+                    .buildPersonRequestDto();
             Person person = PersonTestBuilder.builder()
                     .withUuid(null)
                     .build()
@@ -198,7 +202,7 @@ class PersonServiceImplTest {
                     .buildHouse();
             Optional<House> optionalOwnedHouse = Optional.of(ownedHouse);
 
-            when(mapper.toDomain(personRequestDto))
+            when(personMapper.toDomain(personRequestDto))
                     .thenReturn(person);
             when(houseRepository.findByUuid(HOUSE_UUID))
                     .thenReturn(optionalHouse);
@@ -213,10 +217,10 @@ class PersonServiceImplTest {
 
         @Test
         void createShouldSetPersonUuidAndNotSaveHouses_whenInvokeRepositoryWithEmptyHousesOwners() {
-            PersonPutRequestDto personDto = PersonTestBuilder.builder()
+            PersonRequestDto personDto = PersonTestBuilder.builder()
                     .withUuid(null)
                     .build()
-                    .buildPersonPutRequestDto();
+                    .buildPersonRequestDto();
             Person person = PersonTestBuilder.builder()
                     .withUuid(null)
                     .build()
@@ -226,7 +230,7 @@ class PersonServiceImplTest {
                     .buildHouse();
             Optional<House> optionalHouse = Optional.of(house);
 
-            when(mapper.toDomain(personDto))
+            when(personMapper.toDomain(personDto))
                     .thenReturn(person);
             when(houseRepository.findByUuid(HOUSE_UUID))
                     .thenReturn(optionalHouse);
@@ -247,35 +251,36 @@ class PersonServiceImplTest {
             when(personRepository.findByUuid(INCORRECT_UUID))
                     .thenReturn(Optional.empty());
 
-            assertThrows(CustomEntityNotFoundException.class, () -> personService.update(INCORRECT_UUID, any(PersonPutRequestDto.class)));
-            verify(mapper, never()).toDomain(any(PersonPutRequestDto.class));
-            verify(mapper, never()).merge(any(Person.class), any(Person.class));
+            assertThrows(CustomEntityNotFoundException.class, () -> personService.update(INCORRECT_UUID, any(PersonRequestDto.class)));
+            verify(personMapper, never()).toDomain(any(PersonRequestDto.class));
+            verify(personMapper, never()).merge(any(Person.class), any(Person.class));
         }
 
         @Test
         void updateShouldInvokeRepository_whenCorrectUuidAndDtoTransferred() {
+            String name = "newman";
             Person person = PersonTestBuilder.builder()
                     .build()
                     .buildPerson();
             Optional<Person> optionalPerson = Optional.of(person);
-            PersonPutRequestDto personRequestDto = PersonTestBuilder.builder()
-                    .withName("newman")
+            PersonRequestDto personRequestDto = PersonTestBuilder.builder()
+                    .withName(name)
                     .build()
-                    .buildPersonPutRequestDto();
+                    .buildPersonRequestDto();
             Person updated = PersonTestBuilder.builder()
-                    .withName("newman")
+                    .withName(name)
                     .build()
                     .buildPerson();
             Person merged = PersonTestBuilder.builder()
-                    .withName("newman")
+                    .withName(name)
                     .build()
                     .buildPerson();
 
             when(personRepository.findByUuid(CORRECT_UUID))
                     .thenReturn(optionalPerson);
-            when(mapper.toDomain(personRequestDto))
+            when(personMapper.toDomain(personRequestDto))
                     .thenReturn(updated);
-            when(mapper.merge(person, updated))
+            when(personMapper.merge(person, updated))
                     .thenReturn(merged);
 
             personService.update(CORRECT_UUID, personRequestDto);
@@ -290,35 +295,36 @@ class PersonServiceImplTest {
             when(personRepository.findByUuid(INCORRECT_UUID))
                     .thenReturn(Optional.empty());
 
-            assertThrows(CustomEntityNotFoundException.class, () -> personService.update(INCORRECT_UUID, any(PersonPutRequestDto.class)));
-            verify(mapper, never()).toDomain(any(PersonPutRequestDto.class));
-            verify(mapper, never()).merge(any(Person.class), any(Person.class));
+            assertThrows(CustomEntityNotFoundException.class, () -> personService.update(INCORRECT_UUID, any(PersonRequestDto.class)));
+            verify(personMapper, never()).toDomain(any(PersonRequestDto.class));
+            verify(personMapper, never()).merge(any(Person.class), any(Person.class));
         }
 
         @Test
         void updateShouldInvokeRepository_whenCorrectUuidAndDtoTransferred() {
+            String name = "newman";
             Person person = PersonTestBuilder.builder()
                     .build()
                     .buildPerson();
             Optional<Person> optionalPerson = Optional.of(person);
-            PersonPutRequestDto personRequestDto = PersonTestBuilder.builder()
-                    .withName("newman")
+            PersonRequestDto personRequestDto = PersonTestBuilder.builder()
+                    .withName(name)
                     .build()
-                    .buildPersonPutRequestDto();
+                    .buildPersonRequestDto();
             Person updated = PersonTestBuilder.builder()
-                    .withName("newman")
+                    .withName(name)
                     .build()
                     .buildPerson();
             Person merged = PersonTestBuilder.builder()
-                    .withName("newman")
+                    .withName(name)
                     .build()
                     .buildPerson();
 
             when(personRepository.findByUuid(CORRECT_UUID))
                     .thenReturn(optionalPerson);
-            when(mapper.toDomain(personRequestDto))
+            when(personMapper.toDomain(personRequestDto))
                     .thenReturn(updated);
-            when(mapper.merge(person, updated))
+            when(personMapper.merge(person, updated))
                     .thenReturn(merged);
 
             personService.update(CORRECT_UUID, personRequestDto);
@@ -354,6 +360,133 @@ class PersonServiceImplTest {
 
             assertEquals(expectedException.getMessage(), actualException.getMessage());
             verify(personRepository, never()).delete(any(Person.class));
+        }
+    }
+
+    @Nested
+    class TestGetPersonSearchResult {
+
+        private final PageRequest pageRequest = PageRequest.of(PAGE_NUMBER, PAGE_SIZE);
+
+        @Test
+        void getPersonSearchResultShouldReturnPageWithPersonResponseDto_whenValidConditionPassed() {
+            PersonResponseDto personResponseDto = PersonTestBuilder.builder()
+                    .build()
+                    .buildPersonResponseDto();
+            List<PersonResponseDto> expected = List.of(personResponseDto);
+            Person person = PersonTestBuilder.builder()
+                    .build()
+                    .buildPerson();
+            List<Person> persons = List.of(person);
+            PageImpl<Person> page = new PageImpl<>(persons);
+            String condition = "valid condition";
+
+            when(personRepository.getPersonSearchResult(condition, pageRequest))
+                    .thenReturn(page);
+            when(personMapper.toDto(person))
+                    .thenReturn(personResponseDto);
+
+            Page<PersonResponseDto> actual = personService.getPersonSearchResult(condition, pageRequest);
+
+            assertThat(actual.getContent())
+                    .hasSize(expected.size())
+                    .isEqualTo(expected);
+        }
+
+        @Test
+        void getPersonSearchResultShouldThrowCustomNoContentException_whenFoundedPersonsListIsEmpty() {
+            CustomNoContentException expectedException = CustomNoContentException.of(Person.class);
+            List<Person> houses = List.of();
+            PageImpl<Person> page = new PageImpl<>(houses);
+            String condition = "invalid condition";
+
+            when(personRepository.getPersonSearchResult(condition, pageRequest))
+                    .thenReturn(page);
+
+            CustomNoContentException actualException = assertThrows(CustomNoContentException.class, () -> personService.getPersonSearchResult(condition, pageRequest));
+
+            assertEquals(expectedException.getMessage(), actualException.getMessage());
+            verify(personMapper, never()).toDto(any(Person.class));
+        }
+    }
+
+    @Nested
+    class TestChangeHome {
+
+        @Test
+        void changeHomeShouldSetNewHouseInPersonHouseField() {
+            House oldHouse = HouseTestBuilder.builder()
+                    .build()
+                    .buildHouse();
+            House newHouse = HouseTestBuilder.builder()
+                    .withCity("newCity")
+                    .build()
+                    .buildHouse();
+            Person person = PersonTestBuilder.builder()
+                    .withHouse(oldHouse)
+                    .build()
+                    .buildPerson();
+
+            when(personRepository.findByUuid(PERSON_UUID))
+                    .thenReturn(Optional.of(person));
+            when(houseRepository.findByUuid(HOUSE_UUID))
+                    .thenReturn(Optional.of(newHouse));
+
+            personService.changeHome(PERSON_UUID, HOUSE_UUID);
+
+            assertThat(person.getHouse())
+                    .isEqualTo(newHouse);
+        }
+
+        @Test
+        void changeHomeShouldThrowCustomEntityNotFoundException_whenIncorrectPersonUuid() {
+            CustomEntityNotFoundException expectedException = CustomEntityNotFoundException.of(Person.class, INCORRECT_UUID);
+
+            when(personRepository.findByUuid(INCORRECT_UUID))
+                    .thenReturn(Optional.empty());
+
+            CustomEntityNotFoundException actualException = assertThrows(CustomEntityNotFoundException.class, () -> personService.changeHome(INCORRECT_UUID, HOUSE_UUID));
+
+            assertEquals(expectedException.getMessage(), actualException.getMessage());
+        }
+
+        @Test
+        void changeHomeShouldThrowCustomEntityNotFoundException_whenIncorrectHouseUuid() {
+            Person person = PersonTestBuilder.builder()
+                    .build()
+                    .buildPerson();
+            CustomEntityNotFoundException expectedException = CustomEntityNotFoundException.of(House.class, INCORRECT_UUID);
+
+            when(personRepository.findByUuid(PERSON_UUID))
+                    .thenReturn(Optional.of(person));
+            when(houseRepository.findByUuid(INCORRECT_UUID))
+                    .thenReturn(Optional.empty());
+
+            CustomEntityNotFoundException actualException = assertThrows(CustomEntityNotFoundException.class, () -> personService.changeHome(PERSON_UUID, INCORRECT_UUID));
+
+            assertEquals(expectedException.getMessage(), actualException.getMessage());
+        }
+
+        @Test
+        void changeHomeShouldThrowConditionalException_whenPersonIsNorOwner() {
+            House house = HouseTestBuilder.builder()
+                    .withOwners(Collections.emptySet())
+                    .build()
+                    .buildHouse();
+            Person person = PersonTestBuilder.builder()
+                    .withHouse(house)
+                    .build()
+                    .buildPerson();
+            ConditionalException expectedException = new ConditionalException(CONDITIONAL_RESIDENT_EXIST_EXCEPTION_MESSAGE);
+
+            when(personRepository.findByUuid(PERSON_UUID))
+                    .thenReturn(Optional.of(person));
+            when(houseRepository.findByUuid(HOUSE_UUID))
+                    .thenReturn(Optional.of(house));
+
+            ConditionalException actualException = assertThrows(ConditionalException.class, () -> personService.changeHome(PERSON_UUID, HOUSE_UUID));
+
+            assertEquals(expectedException.getMessage(), actualException.getMessage());
         }
     }
 }

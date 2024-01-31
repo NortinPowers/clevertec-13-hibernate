@@ -1,14 +1,15 @@
 package by.clevertec.house.service.impl;
 
-import static by.clevertec.house.util.CheckerUtil.checkIllegalArgument;
 import static by.clevertec.house.util.CheckerUtil.checkList;
+import static by.clevertec.house.util.ResponseUtils.CONDITIONAL_RESIDENT_EXIST_EXCEPTION_MESSAGE;
 
 import by.clevertec.house.domain.House;
 import by.clevertec.house.domain.Person;
 import by.clevertec.house.dto.request.PersonPathRequestDto;
-import by.clevertec.house.dto.request.PersonPutRequestDto;
+import by.clevertec.house.dto.request.PersonRequestDto;
 import by.clevertec.house.dto.response.HouseResponseDto;
 import by.clevertec.house.dto.response.PersonResponseDto;
+import by.clevertec.house.exception.ConditionalException;
 import by.clevertec.house.exception.CustomEntityNotFoundException;
 import by.clevertec.house.mapper.HouseMapper;
 import by.clevertec.house.mapper.PersonMapper;
@@ -54,7 +55,7 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public void save(PersonPutRequestDto personDto) {
+    public void save(PersonRequestDto personDto) {
         Person person = personMapper.toDomain(personDto);
         if (person.getUuid() == null) {
             person.setUuid(UUID.randomUUID());
@@ -71,7 +72,7 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public void update(UUID uuid, PersonPutRequestDto personDto) {
+    public void update(UUID uuid, PersonRequestDto personDto) {
         Optional<Person> personOptional = personRepository.findByUuid(uuid);
         if (personOptional.isPresent()) {
             Person updated = personMapper.toDomain(personDto);
@@ -123,7 +124,6 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public List<HouseResponseDto> getOwnedHouses(UUID uuid) {
-        checkIllegalArgument(uuid, "UUID cannot be null");
         Optional<Person> personOptional = personRepository.findByUuid(uuid);
         if (personOptional.isPresent()) {
             List<House> houses = personOptional.get().getOwnedHouses();
@@ -148,7 +148,11 @@ public class PersonServiceImpl implements PersonService {
                 Person person = optionalPerson.get();
                 if (!person.getHouse().equals(updated)) {
                     person.setHouse(updated);
+                } else {
+                    throw new ConditionalException(CONDITIONAL_RESIDENT_EXIST_EXCEPTION_MESSAGE);
                 }
+            } else {
+                throw CustomEntityNotFoundException.of(House.class, homeUuid);
             }
         } else {
             throw CustomEntityNotFoundException.of(Person.class, uuid);
@@ -163,13 +167,12 @@ public class PersonServiceImpl implements PersonService {
         return people;
     }
 
-    private House getResidentHouse(PersonPutRequestDto personDto) {
+    private House getResidentHouse(PersonRequestDto personDto) {
         UUID uuid = personDto.getHouseUuid();
-        checkIllegalArgument(uuid, "Uuid of the person`s house is missing");
-        return houseRepository.findByUuid(uuid).orElseThrow(() -> (CustomEntityNotFoundException.of(House.class, uuid)));
+        return houseRepository.findByUuid(uuid).orElseThrow(() -> CustomEntityNotFoundException.of(House.class, uuid));
     }
 
-    private List<House> getHouseOwners(PersonPutRequestDto personDto) {
+    private List<House> getHouseOwners(PersonRequestDto personDto) {
         List<UUID> ownedHouseUuids = personDto.getOwnedHouseUuids();
         List<House> houses;
         if (ownedHouseUuids == null || ownedHouseUuids.isEmpty()) {

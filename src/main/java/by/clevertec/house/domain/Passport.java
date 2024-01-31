@@ -12,8 +12,8 @@ import lombok.experimental.FieldNameConstants;
 @Setter
 @Embeddable
 @NoArgsConstructor
-@FieldNameConstants
 @EqualsAndHashCode
+@FieldNameConstants
 public class Passport {
 
     @Column(name = "passport_series", nullable = false)

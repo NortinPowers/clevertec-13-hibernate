@@ -38,18 +38,37 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
      */
     void deleteByUuid(UUID uuid);
 
+    /**
+     * Метод для поиска всех жильцов (арендаторов) дома с указанным идентификатором.
+     *
+     * @param houseUuid Идентификатор дома.
+     * @return Список жильцов (арендаторов), проживающих в указанном доме.
+     */
     @Query("SELECT DISTINCT p FROM Person p "
             + "JOIN FETCH House h ON p.house = h "
             + "JOIN FETCH HouseHistory hh ON h = hh.house "
             + "WHERE h.uuid = :houseUuid AND hh.status = 'TENANT'")
     List<Person> findAllResidentsByHouseUuid(UUID houseUuid);
 
+    /**
+     * Метод для поиска всех владельцев дома с указанным идентификатором.
+     *
+     * @param houseUuid Идентификатор дома.
+     * @return Список владельцев указанного дома.
+     */
     @Query("SELECT DISTINCT p FROM Person p "
             + "JOIN FETCH House h ON p.house = h "
             + "JOIN FETCH HouseHistory hh ON h = hh.house "
             + "WHERE h.uuid = :houseUuid AND hh.status = 'OWNER'")
     List<Person> findAllOwnersByHouseUuid(UUID houseUuid);
 
+    /**
+     * Метод для поиска людей по заданным критериям имени или фамилии и сортировкой по дате создания в убывающем порядке.
+     *
+     * @param condition Условие поиска, которое может соответствовать части имени или фамилии человека.
+     * @param pageable  Интерфейс для представления информации о странице результатов запроса.
+     * @return Страница с результатами поиска людей.
+     */
     @Query("SELECT DISTINCT p FROM Person p "
             + "WHERE (LOWER(p.name) LIKE LOWER(CONCAT('%', :condition, '%')) "
             + "OR LOWER(p.surname) LIKE LOWER(CONCAT('%', :condition, '%'))) "
