@@ -16,13 +16,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import by.clevertec.exception.ConditionalException;
+import by.clevertec.exception.CustomEntityNotFoundException;
+import by.clevertec.exception.CustomNoContentException;
 import by.clevertec.house.domain.House;
 import by.clevertec.house.domain.Person;
 import by.clevertec.house.dto.request.PersonRequestDto;
 import by.clevertec.house.dto.response.PersonResponseDto;
-import by.clevertec.house.exception.ConditionalException;
-import by.clevertec.house.exception.CustomEntityNotFoundException;
-import by.clevertec.house.exception.CustomNoContentException;
 import by.clevertec.house.mapper.PersonMapper;
 import by.clevertec.house.repository.HouseRepository;
 import by.clevertec.house.repository.PersonRepository;

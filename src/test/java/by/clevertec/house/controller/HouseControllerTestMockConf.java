@@ -1,22 +1,22 @@
 package by.clevertec.house.controller;
 
-import static by.clevertec.house.util.ResponseUtils.getExceptionResponse;
 import static by.clevertec.house.util.TestConstant.CORRECT_UUID;
 import static by.clevertec.house.util.TestConstant.PAGE_NUMBER;
 import static by.clevertec.house.util.TestConstant.PAGE_SIZE;
+import static by.clevertec.util.ResponseUtils.getExceptionResponse;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import by.clevertec.exception.CustomNoContentException;
 import by.clevertec.house.AbstractTest;
 import by.clevertec.house.domain.House;
 import by.clevertec.house.dto.response.HouseResponseDto;
-import by.clevertec.house.exception.CustomNoContentException;
-import by.clevertec.house.model.ExceptionResponse;
 import by.clevertec.house.service.HouseService;
 import by.clevertec.house.util.HouseTestBuilder;
+import by.clevertec.model.ExceptionResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

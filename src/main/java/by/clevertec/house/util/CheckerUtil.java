@@ -1,6 +1,6 @@
 package by.clevertec.house.util;
 
-import by.clevertec.house.exception.CustomNoContentException;
+import by.clevertec.exception.CustomNoContentException;
 import java.util.Collection;
 import lombok.experimental.UtilityClass;
 

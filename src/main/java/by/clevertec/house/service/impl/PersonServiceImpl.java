@@ -3,14 +3,14 @@ package by.clevertec.house.service.impl;
 import static by.clevertec.house.util.CheckerUtil.checkList;
 import static by.clevertec.house.util.ResponseUtils.CONDITIONAL_RESIDENT_EXIST_EXCEPTION_MESSAGE;
 
+import by.clevertec.exception.ConditionalException;
+import by.clevertec.exception.CustomEntityNotFoundException;
 import by.clevertec.house.domain.House;
 import by.clevertec.house.domain.Person;
 import by.clevertec.house.dto.request.PersonPathRequestDto;
 import by.clevertec.house.dto.request.PersonRequestDto;
 import by.clevertec.house.dto.response.HouseResponseDto;
 import by.clevertec.house.dto.response.PersonResponseDto;
-import by.clevertec.house.exception.ConditionalException;
-import by.clevertec.house.exception.CustomEntityNotFoundException;
 import by.clevertec.house.mapper.HouseMapper;
 import by.clevertec.house.mapper.PersonMapper;
 import by.clevertec.house.repository.HouseRepository;

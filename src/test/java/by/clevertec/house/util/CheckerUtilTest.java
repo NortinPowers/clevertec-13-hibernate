@@ -5,7 +5,7 @@ import static by.clevertec.house.util.CheckerUtil.checkList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import by.clevertec.house.exception.CustomNoContentException;
+import by.clevertec.exception.CustomNoContentException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;

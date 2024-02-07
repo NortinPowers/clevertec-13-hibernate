@@ -1,0 +1,44 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'io.freefair.lombok' version '8.3'
+}
+
+group = 'by.clevertec'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+publishing {
+    publications {
+        customExceptionHandler(MavenPublication) {
+        }
+    }
+}
+
+ext {
+    assertjVersion = '3.24.2'
+    starterVersion = '3.2.2'
+    junitBomVersion = '5.9.1'
+}
+
+dependencies {
+    implementation "org.springframework.boot:spring-boot-starter-aop:${starterVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-web-services:${starterVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa:${starterVersion}"
+
+    testImplementation platform("org.junit:junit-bom:${junitBomVersion}")
+
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation "org.assertj:assertj-core:${assertjVersion}"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.named('build'){
+    finalizedBy('publishToMavenLocal')
+}

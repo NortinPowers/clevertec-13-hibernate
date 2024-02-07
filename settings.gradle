@@ -1,1 +1,2 @@
 rootProject.name = 'hibernate'
+include 'spring-boot-exception-handler-starter'
