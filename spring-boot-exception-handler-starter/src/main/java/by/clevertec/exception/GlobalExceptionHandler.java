@@ -1,17 +1,17 @@
-package by.clevertec.house.exception;
+package by.clevertec.exception;
 
-import static by.clevertec.house.util.ResponseUtils.DATA_INTEGRITY_VIOLATION_EXCEPTION_MESSAGE;
-import static by.clevertec.house.util.ResponseUtils.HTTP_NOT_READABLE_EXCEPTION_MESSAGE;
-import static by.clevertec.house.util.ResponseUtils.METHOD_ARGUMENT_NOT_VALID_EXCEPTION_MESSAGE;
-import static by.clevertec.house.util.ResponseUtils.NOT_FOUND_EXCEPTION_MESSAGE;
-import static by.clevertec.house.util.ResponseUtils.OTHER_EXCEPTION_MESSAGE;
-import static by.clevertec.house.util.ResponseUtils.UNIQUE_CONSTRAINT_VIOLATION_EXCEPTION_MESSAGE;
-import static by.clevertec.house.util.ResponseUtils.getErrorValidationMessages;
-import static by.clevertec.house.util.ResponseUtils.getExceptionResponse;
+import static by.clevertec.util.ResponseUtils.DATA_INTEGRITY_VIOLATION_EXCEPTION_MESSAGE;
+import static by.clevertec.util.ResponseUtils.HTTP_NOT_READABLE_EXCEPTION_MESSAGE;
+import static by.clevertec.util.ResponseUtils.METHOD_ARGUMENT_NOT_VALID_EXCEPTION_MESSAGE;
+import static by.clevertec.util.ResponseUtils.NOT_FOUND_EXCEPTION_MESSAGE;
+import static by.clevertec.util.ResponseUtils.OTHER_EXCEPTION_MESSAGE;
+import static by.clevertec.util.ResponseUtils.UNIQUE_CONSTRAINT_VIOLATION_EXCEPTION_MESSAGE;
+import static by.clevertec.util.ResponseUtils.getErrorValidationMessages;
+import static by.clevertec.util.ResponseUtils.getExceptionResponse;
 
-import by.clevertec.house.model.BaseResponse;
-import by.clevertec.house.model.ErrorValidationResponse;
-import by.clevertec.house.model.ExceptionResponse;
+import by.clevertec.model.BaseResponse;
+import by.clevertec.model.ErrorValidationResponse;
+import by.clevertec.model.ExceptionResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -90,6 +90,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Обрабатывает исключение {@link MethodArgumentNotValidException} и возвращает соответствующий ResponseEntity с {@link BaseResponse}.
+     *
+     * @param exception Исключение {@link MethodArgumentNotValidException}, которое требуется обработать.
+     * @return ResponseEntity с {@link BaseResponse} и кодом состояния HTTP BAD_REQUEST.
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     private ResponseEntity<BaseResponse> handleException(MethodArgumentNotValidException exception) {
         ErrorValidationResponse errorValidationResponse = new ErrorValidationResponse(
@@ -164,6 +170,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * Обрабатывает исключение {@link HttpMessageNotReadableException} и возвращает соответствующий ResponseEntity с {@link BaseResponse}.
+     *
+     * @param exception Исключение {@link HttpMessageNotReadableException}, которое требуется обработать.
+     * @return ResponseEntity с {@link BaseResponse} и кодом состояния HTTP INTERNAL_SERVER_ERROR.
+     */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     private ResponseEntity<BaseResponse> handleException(HttpMessageNotReadableException exception) {
         ExceptionResponse response = getExceptionResponse(

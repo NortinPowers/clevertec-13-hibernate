@@ -19,6 +19,7 @@ configurations {
 }
 
 repositories {
+	mavenLocal()
 	mavenCentral()
 }
 
@@ -44,6 +45,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
 	implementation 'org.flywaydb:flyway-core'
 	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${openapiVersion}"
+	implementation 'by.clevertec:spring-boot-exception-handler-starter:0.0.1-SNAPSHOT'
+
+	implementation project(path: ':spring-boot-exception-handler-starter')
 
 	compileOnly 'org.projectlombok:lombok'
 	compileOnly "org.mapstruct:mapstruct:${mapstructVersion}"
@@ -69,6 +73,10 @@ jar {
 	}
 }
 
-tasks.named('test') {
+springBoot {
+	mainClass = 'by.clevertec.house.HouseApplication'
+}
+
+test {
 	useJUnitPlatform()
 }

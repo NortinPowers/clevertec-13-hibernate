@@ -1,12 +1,12 @@
 package by.clevertec.house.proxy;
 
+import by.clevertec.exception.CustomEntityNotFoundException;
 import by.clevertec.house.cache.Cache;
 import by.clevertec.house.cache.impl.LfuCache;
 import by.clevertec.house.cache.impl.LruCache;
 import by.clevertec.house.domain.House;
 import by.clevertec.house.dto.request.HouseRequestDto;
 import by.clevertec.house.dto.response.HouseResponseDto;
-import by.clevertec.house.exception.CustomEntityNotFoundException;
 import by.clevertec.house.mapper.HouseMapper;
 import by.clevertec.house.repository.HouseRepository;
 import java.util.Optional;

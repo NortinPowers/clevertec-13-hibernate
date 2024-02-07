@@ -1,4 +1,4 @@
-package by.clevertec.house.model;
+package by.clevertec.model;
 
 import lombok.Getter;
 import lombok.Setter;

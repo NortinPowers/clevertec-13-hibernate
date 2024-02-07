@@ -1,4 +1,4 @@
-package by.clevertec.house.model;
+package by.clevertec.model;
 
 import java.util.List;
 import lombok.Getter;

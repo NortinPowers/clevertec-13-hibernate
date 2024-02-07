@@ -4,8 +4,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import by.clevertec.house.dto.response.HouseResponseDto;
 import by.clevertec.house.dto.response.PersonResponseDto;
-import by.clevertec.house.model.ExceptionResponse;
 import by.clevertec.house.service.HouseHistoryService;
+import by.clevertec.model.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;

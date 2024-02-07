@@ -105,7 +105,7 @@
 
 <h3>Использование</h3>
 
-1. Для запуска соберите проект через терминал коммандой ./gradlew assemble
+1. Для запуска соберите проект через терминал командой ./gradlew assemble
 2. Подкиньте собранный war-файл в tomcat build/libs/servlet-1.0-SNAPSHOT.war (уверено запускается на версии 10.1.7)
 3. Запустите контейнер tomcat
 4. Для удобной проверки работоспособности сервлетов импортируйте коллекцию запросов в postman из пакета postman/Clevertec Servlet.postman_collection.json.
@@ -166,3 +166,15 @@
 1. Для части тестов необходимо включить Docker
 
 ![Тесты](img/coverage.png)
+
+<h3> Task Spring AOP</h3>
+
+- Добавить в свой проект оправданный spring aop (уже добавлен в реализации кэша)
+
+- ***Попробовать написать свой стартер по отлову exception’ов в своём приложении
+
+<h3>Использование</h3>
+
+- Для отлова ошибок создан стартер spring-boot-exception-handler-starter
+1. Соберите стартер используя .\gradlew :spring-boot-exception-handler-starter:build
+2. Собранный стартер появится в Вашем локальном репозитории .m2\repository\by\clevertec\spring-boot-exception-handler-starter
